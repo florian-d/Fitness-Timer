@@ -15,12 +15,31 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [timeRemaining, setTimeRemaining] = useState(settings.exerciseTime);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const playBellSound = useCallback(() => {
+    try {
+      // Initialize audio element lazily (only when needed)
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/bell.mp3');
+        audioRef.current.volume = 0.3;
+      }
+      
+      // Reset audio to start and play
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch((error) => {
+        console.warn('Audio playback failed:', error);
+      });
+    } catch (error) {
+      console.warn('Audio playback not supported:', error);
+    }
+  }, []);
 
   const getPhaseColor = (): string => {
     switch (phase) {
@@ -51,6 +70,9 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   };
 
   const nextPhase = useCallback(() => {
+    // Play bell sound when transitioning (timer reached zero)
+    playBellSound();
+    
     if (phase === 'ready') {
       setPhase('exercise');
       setTimeRemaining(settings.exerciseTime);
@@ -69,7 +91,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
       setTimeRemaining(settings.exerciseTime);
       setCurrentRound(prev => prev + 1);
     }
-  }, [phase, currentRound, settings, onRunningChange]);
+  }, [phase, currentRound, settings, onRunningChange, playBellSound]);
 
   useEffect(() => {
     if (isRunning && phase !== 'ready' && phase !== 'complete') {
