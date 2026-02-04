@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { WorkoutSettings } from '../App';
+import { useWakeLock } from '../hooks/useWakeLock';
 import './Timer.css';
 
 interface TimerProps {
@@ -16,6 +17,9 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Keep screen awake during exercise phase only
+  useWakeLock(phase === 'exercise' && isRunning);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
