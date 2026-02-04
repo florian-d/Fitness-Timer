@@ -110,10 +110,19 @@ The app will now appear on your home screen and can be launched like a native ap
 
 ## CI/CD
 
-The project includes a GitHub Actions workflow that:
+The project includes GitHub Actions workflows:
+
+### Continuous Integration (CI)
 - Runs tests on Node.js 18.x and 20.x
 - Builds the application
 - Deploys to GitHub Pages on push to main branch
+
+### Release Deployment (FTP)
+- Automatically deploys the app to hosting provider via FTP
+- Triggered on Git tags (e.g., `v1.0.0`) or GitHub releases
+- Can also be manually triggered
+
+For detailed setup instructions, see [FTP Deployment Guide](docs/FTP_DEPLOYMENT.md)
 
 ## License
 
