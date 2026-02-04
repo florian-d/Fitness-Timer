@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Timer from './components/Timer';
 import Settings from './components/Settings';
 import { loadSettings, saveSettings } from './utils/localStorage';
@@ -17,9 +17,14 @@ function App() {
   });
   const [showSettings, setShowSettings] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const isInitialMount = useRef(true);
 
-  // Save settings to localStorage whenever they change
+  // Save settings to localStorage whenever they change (skip initial mount)
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     saveSettings(settings);
   }, [settings]);
 
