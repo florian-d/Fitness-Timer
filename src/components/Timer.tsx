@@ -9,6 +9,9 @@ interface TimerProps {
 
 type Phase = 'ready' | 'exercise' | 'rest' | 'complete';
 
+// Delay in milliseconds between consecutive bell sounds
+const BELL_SOUND_DELAY_MS = 300;
+
 const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [phase, setPhase] = useState<Phase>('ready');
   const [currentRound, setCurrentRound] = useState(1);
@@ -40,7 +43,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
           .then(() => {
             // Wait for the sound to finish before playing again
             if (count > 1) {
-              setTimeout(() => playSound(count - 1), 300);
+              setTimeout(() => playSound(count - 1), BELL_SOUND_DELAY_MS);
             }
           })
           .catch((error) => {
