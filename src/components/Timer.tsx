@@ -15,7 +15,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [timeRemaining, setTimeRemaining] = useState(settings.exerciseTime);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -25,34 +25,18 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
 
   const playBellSound = useCallback(() => {
     try {
-      // Initialize AudioContext lazily (only when needed)
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Initialize audio element lazily (only when needed)
+      if (!audioRef.current) {
+        audioRef.current = new Audio('/bell.wav');
+        audioRef.current.volume = 0.3;
       }
-
-      const audioContext = audioContextRef.current;
-      const currentTime = audioContext.currentTime;
-
-      // Create oscillator for bell-like sound
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      // Bell sound: starts at a higher frequency and quickly decays
-      oscillator.frequency.setValueAtTime(800, currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(400, currentTime + 0.1);
-
-      // Volume envelope: quick attack, exponential decay
-      gainNode.gain.setValueAtTime(0, currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.3, currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.5);
-
-      oscillator.start(currentTime);
-      oscillator.stop(currentTime + 0.5);
+      
+      // Reset audio to start and play
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch((error) => {
+        console.warn('Audio playback failed:', error);
+      });
     } catch (error) {
-      // Silently fail if audio is not supported
       console.warn('Audio playback not supported:', error);
     }
   }, []);

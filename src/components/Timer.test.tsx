@@ -186,39 +186,21 @@ describe('Timer Component', () => {
   });
 
   describe('Bell Sound', () => {
-    let mockAudioContext: any;
-    let mockOscillator: any;
-    let mockGainNode: any;
+    let mockPlay: jest.Mock;
+    let mockAudio: any;
 
     beforeEach(() => {
-      // Mock Web Audio API
-      mockOscillator = {
-        connect: jest.fn(),
-        start: jest.fn(),
-        stop: jest.fn(),
-        frequency: {
-          setValueAtTime: jest.fn(),
-          exponentialRampToValueAtTime: jest.fn(),
-        },
-      };
-
-      mockGainNode = {
-        connect: jest.fn(),
-        gain: {
-          setValueAtTime: jest.fn(),
-          linearRampToValueAtTime: jest.fn(),
-          exponentialRampToValueAtTime: jest.fn(),
-        },
-      };
-
-      mockAudioContext = {
-        createOscillator: jest.fn(() => mockOscillator),
-        createGain: jest.fn(() => mockGainNode),
-        destination: {},
+      // Mock HTMLAudioElement
+      mockPlay = jest.fn().mockResolvedValue(undefined);
+      mockAudio = {
+        play: mockPlay,
+        pause: jest.fn(),
+        volume: 0,
         currentTime: 0,
       };
 
-      (window as any).AudioContext = jest.fn(() => mockAudioContext);
+      // Mock Audio constructor
+      (window as any).Audio = jest.fn(() => mockAudio);
     });
 
     test('plays bell sound when exercise phase completes', async () => {
@@ -238,8 +220,8 @@ describe('Timer Component', () => {
       });
 
       // Verify bell sound was played
-      expect(mockAudioContext.createOscillator).toHaveBeenCalled();
-      expect(mockOscillator.start).toHaveBeenCalled();
+      expect(window.Audio).toHaveBeenCalledWith('/bell.wav');
+      expect(mockPlay).toHaveBeenCalled();
     });
 
     test('plays bell sound when rest phase completes', async () => {
@@ -264,9 +246,8 @@ describe('Timer Component', () => {
         expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
       });
 
-      // Verify bell sound was played
-      expect(mockAudioContext.createOscillator).toHaveBeenCalled();
-      expect(mockOscillator.start).toHaveBeenCalled();
+      // Verify bell sound was played (Audio already created, so just check play)
+      expect(mockPlay).toHaveBeenCalled();
     });
 
     test('plays bell sound when workout completes', async () => {
@@ -300,14 +281,13 @@ describe('Timer Component', () => {
         expect(screen.getByText(/complete!/i)).toBeInTheDocument();
       });
 
-      // Verify bell sound was played
-      expect(mockAudioContext.createOscillator).toHaveBeenCalled();
-      expect(mockOscillator.start).toHaveBeenCalled();
+      // Verify bell sound was played (Audio already created, so just check play)
+      expect(mockPlay).toHaveBeenCalled();
     });
 
     test('handles audio API errors gracefully', async () => {
-      // Mock AudioContext to throw an error
-      (window as any).AudioContext = jest.fn(() => {
+      // Mock Audio constructor to throw an error
+      (window as any).Audio = jest.fn(() => {
         throw new Error('Audio not supported');
       });
 
