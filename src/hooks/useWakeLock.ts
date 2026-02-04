@@ -17,6 +17,7 @@ export const useWakeLock = (shouldLock: boolean): UseWakeLockReturn => {
   const [isSupported] = useState(() => 'wakeLock' in navigator);
   const [isActive, setIsActive] = useState(false);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  const releaseHandlerRef = useRef<((ev: Event) => void) | null>(null);
 
   useEffect(() => {
     // Only proceed if Wake Lock API is supported
@@ -33,10 +34,14 @@ export const useWakeLock = (shouldLock: boolean): UseWakeLockReturn => {
         wakeLockRef.current = await navigator.wakeLock.request('screen');
         setIsActive(true);
 
-        // Listen for wake lock release (can happen when tab loses visibility)
-        wakeLockRef.current.addEventListener('release', () => {
+        // Create and store the release handler
+        const handleRelease = () => {
           setIsActive(false);
-        });
+        };
+        releaseHandlerRef.current = handleRelease;
+
+        // Listen for wake lock release (can happen when tab loses visibility)
+        wakeLockRef.current.addEventListener('release', handleRelease);
       } catch (err) {
         // Wake lock request can fail if page is not visible or user denied permission
         console.warn('Wake lock request failed:', err);
@@ -44,10 +49,20 @@ export const useWakeLock = (shouldLock: boolean): UseWakeLockReturn => {
       }
     };
 
-    const releaseWakeLock = async () => {
+    const releaseWakeLock = () => {
       if (wakeLockRef.current) {
         try {
-          await wakeLockRef.current.release();
+          // Remove event listener before releasing
+          if (releaseHandlerRef.current) {
+            wakeLockRef.current.removeEventListener('release', releaseHandlerRef.current);
+            releaseHandlerRef.current = null;
+          }
+          
+          // Release the wake lock (fire and forget)
+          wakeLockRef.current.release().catch((err) => {
+            console.warn('Wake lock release failed:', err);
+          });
+          
           wakeLockRef.current = null;
           setIsActive(false);
         } catch (err) {
