@@ -15,12 +15,47 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [timeRemaining, setTimeRemaining] = useState(settings.exerciseTime);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const playBellSound = useCallback(() => {
+    try {
+      // Initialize AudioContext lazily (only when needed)
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+
+      const audioContext = audioContextRef.current;
+      const currentTime = audioContext.currentTime;
+
+      // Create oscillator for bell-like sound
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      // Bell sound: starts at a higher frequency and quickly decays
+      oscillator.frequency.setValueAtTime(800, currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(400, currentTime + 0.1);
+
+      // Volume envelope: quick attack, exponential decay
+      gainNode.gain.setValueAtTime(0, currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, currentTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.5);
+
+      oscillator.start(currentTime);
+      oscillator.stop(currentTime + 0.5);
+    } catch (error) {
+      // Silently fail if audio is not supported
+      console.warn('Audio playback not supported:', error);
+    }
+  }, []);
 
   const getPhaseColor = (): string => {
     switch (phase) {
@@ -51,6 +86,9 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   };
 
   const nextPhase = useCallback(() => {
+    // Play bell sound when transitioning (timer reached zero)
+    playBellSound();
+    
     if (phase === 'ready') {
       setPhase('exercise');
       setTimeRemaining(settings.exerciseTime);
@@ -69,7 +107,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
       setTimeRemaining(settings.exerciseTime);
       setCurrentRound(prev => prev + 1);
     }
-  }, [phase, currentRound, settings, onRunningChange]);
+  }, [phase, currentRound, settings, onRunningChange, playBellSound]);
 
   useEffect(() => {
     if (isRunning && phase !== 'ready' && phase !== 'complete') {
