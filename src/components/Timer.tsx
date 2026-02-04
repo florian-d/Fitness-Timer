@@ -27,7 +27,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
     try {
       // Initialize audio element lazily (only when needed)
       if (!audioRef.current) {
-        audioRef.current = new Audio('/bell.wav');
+        audioRef.current = new Audio('/bell.mp3');
         audioRef.current.volume = 0.3;
       }
       
