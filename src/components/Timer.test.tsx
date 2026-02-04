@@ -212,6 +212,9 @@ describe('Timer Component', () => {
         expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
       });
 
+      // Clear previous calls (from ready to exercise transition)
+      jest.clearAllMocks();
+
       // Advance through exercise time to trigger bell
       jest.advanceTimersByTime(3000);
 
@@ -219,9 +222,8 @@ describe('Timer Component', () => {
         expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
       });
 
-      // Verify bell sound was played
-      expect(window.Audio).toHaveBeenCalledWith('/bell.wav');
-      expect(mockPlay).toHaveBeenCalled();
+      // Verify bell sound was played once (exercise to rest transition)
+      expect(mockPlay).toHaveBeenCalledTimes(1);
     });
 
     test('plays bell sound when rest phase completes', async () => {
@@ -246,8 +248,16 @@ describe('Timer Component', () => {
         expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
       });
 
-      // Verify bell sound was played (Audio already created, so just check play)
-      expect(mockPlay).toHaveBeenCalled();
+      // Verify bell sound was played twice (rest to exercise transition)
+      // First bell plays immediately
+      expect(mockPlay).toHaveBeenCalledTimes(1);
+      
+      // Advance timer to allow second bell to play (300ms delay)
+      jest.advanceTimersByTime(300);
+      
+      await waitFor(() => {
+        expect(mockPlay).toHaveBeenCalledTimes(2);
+      });
     });
 
     test('plays bell sound when workout completes', async () => {
