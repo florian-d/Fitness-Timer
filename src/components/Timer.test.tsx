@@ -187,20 +187,24 @@ describe('Timer Component', () => {
 
   describe('Bell Sound', () => {
     let mockPlay: jest.Mock;
-    let mockAudio: any;
+    let audioInstances: any[];
 
     beforeEach(() => {
       // Mock HTMLAudioElement
       mockPlay = jest.fn().mockResolvedValue(undefined);
-      mockAudio = {
-        play: mockPlay,
-        pause: jest.fn(),
-        volume: 0,
-        currentTime: 0,
-      };
+      audioInstances = [];
 
-      // Mock Audio constructor
-      (window as any).Audio = jest.fn(() => mockAudio);
+      // Mock Audio constructor to track all instances
+      (window as any).Audio = jest.fn(() => {
+        const mockAudio = {
+          play: mockPlay,
+          pause: jest.fn(),
+          volume: 0,
+          currentTime: 0,
+        };
+        audioInstances.push(mockAudio);
+        return mockAudio;
+      });
     });
 
     test('plays bell sound when exercise phase completes', async () => {
@@ -316,7 +320,8 @@ describe('Timer Component', () => {
 
       // App should continue working despite audio error
       expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Audio playback not supported:', expect.any(Error));
+      // With new implementation, errors in Audio constructor are caught by inner try-catch
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Audio playback failed:', expect.any(Error));
 
       consoleWarnSpy.mockRestore();
     });

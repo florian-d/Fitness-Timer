@@ -18,7 +18,6 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [timeRemaining, setTimeRemaining] = useState(settings.exerciseTime);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -28,30 +27,21 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
 
   const playBellSound = useCallback((times: number = 1) => {
     try {
-      // Initialize audio element lazily (only when needed)
-      if (!audioRef.current) {
-        audioRef.current = new Audio('/bell.mp3');
-        audioRef.current.volume = 0.3;
-      }
-      
       // Play bell sound the specified number of times
-      const playSound = (count: number) => {
-        if (count === 0) return;
-        
-        audioRef.current!.currentTime = 0;
-        audioRef.current!.play()
-          .then(() => {
-            // Wait for the sound to finish before playing again
-            if (count > 1) {
-              setTimeout(() => playSound(count - 1), BELL_SOUND_DELAY_MS);
-            }
-          })
-          .catch((error) => {
+      // Each bell gets its own Audio instance so they can overlap
+      for (let i = 0; i < times; i++) {
+        setTimeout(() => {
+          try {
+            const audio = new Audio('/bell.mp3');
+            audio.volume = 0.3;
+            audio.play().catch((error) => {
+              console.warn('Audio playback failed:', error);
+            });
+          } catch (error) {
             console.warn('Audio playback failed:', error);
-          });
-      };
-      
-      playSound(times);
+          }
+        }, i * BELL_SOUND_DELAY_MS);
+      }
     } catch (error) {
       console.warn('Audio playback not supported:', error);
     }
