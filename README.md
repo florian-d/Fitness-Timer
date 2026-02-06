@@ -14,6 +14,13 @@ A Progressive Web App (PWA) for High-Intensity Interval Training (HIIT) workouts
 - **Use at Your Own Risk**: This application is provided as-is without any warranties
 - **No Liability**: The author(s) assume no responsibility or liability for any errors, omissions, or results obtained from the use of this application. This software is provided "as is" without warranty of any kind, either express or implied. Use of this application is at your sole risk.
 
+### Health & Fitness Disclaimer
+- **Not Medical Advice**: This application is not intended to provide medical advice or replace professional medical consultation
+- **Physical Activity Risks**: High-intensity interval training and exercise can be strenuous and may carry risks of physical injury
+- **Consult Your Doctor**: Before beginning any exercise program, consult with a healthcare professional, especially if you have any pre-existing health conditions, injuries, or concerns
+- **No Health Liability**: The developer assumes no responsibility or liability for any physical injuries, health conditions, or medical issues that may result from using this application or following any workout routines
+- **Know Your Limits**: Users are solely responsible for knowing their physical limitations and exercising safely within their capabilities
+
 ## Features
 
 - **Visual Timer Display**: Large, high-contrast timer display for easy visibility during workouts
