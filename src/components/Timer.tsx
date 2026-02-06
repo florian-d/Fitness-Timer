@@ -19,6 +19,8 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [timeRemaining, setTimeRemaining] = useState(settings.exerciseTime);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUnlockedRef = useRef(false);
 
   // Keep screen awake during exercise phase only
   useWakeLock(phase === 'exercise' && isRunning);
@@ -29,27 +31,70 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  useEffect(() => {
+    try {
+      audioRef.current = new Audio('/bell.mp3');
+      audioRef.current.preload = 'auto';
+      audioRef.current.volume = 0.3;
+    } catch (error) {
+      console.warn('Audio initialization failed:', error);
+      audioRef.current = null;
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const unlockAudio = useCallback(() => {
+    if (!audioRef.current || audioUnlockedRef.current) {
+      return;
+    }
+    audioRef.current
+      .play()
+      .then(() => {
+        if (!audioRef.current) {
+          return;
+        }
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioUnlockedRef.current = true;
+      })
+      .catch(() => {
+        // Ignore unlock errors; iOS may block until a user gesture is detected
+      });
+  }, []);
+
+  const playSingleBell = useCallback(() => {
+    if (!audioRef.current) {
+      return;
+    }
+    try {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch((error) => {
+        console.warn('Audio playback failed:', error);
+      });
+    } catch (error) {
+      console.warn('Audio playback failed:', error);
+    }
+  }, []);
+
   const playBellSound = useCallback((times: number = 1) => {
     try {
       // Play bell sound the specified number of times
-      // Each bell gets its own Audio instance so they can overlap
       for (let i = 0; i < times; i++) {
         setTimeout(() => {
-          try {
-            const audio = new Audio('/bell.mp3');
-            audio.volume = 0.3;
-            audio.play().catch((error) => {
-              console.warn('Audio playback failed:', error);
-            });
-          } catch (error) {
-            console.warn('Audio playback failed:', error);
-          }
+          playSingleBell();
         }, i * BELL_SOUND_DELAY_MS);
       }
     } catch (error) {
       console.warn('Audio playback not supported:', error);
     }
-  }, []);
+  }, [playSingleBell]);
 
   const getPhaseColor = (): string => {
     switch (phase) {
@@ -137,6 +182,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   }, [isRunning, phase, onRunningChange]);
 
   const handleStartPause = () => {
+    unlockAudio();
     if (phase === 'ready') {
       setIsRunning(true);
       nextPhase();
