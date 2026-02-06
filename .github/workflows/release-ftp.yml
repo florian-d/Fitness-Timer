@@ -38,12 +38,8 @@ jobs:
       run: npm run build
 
     - name: Deploy to SFTP
-      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-      with:
-        server: ${{ secrets.SFTP_HOST }}
-        username: ${{ secrets.SFTP_USERNAME }}
-        password: ${{ secrets.SFTP_PASSWORD }}
-        port: ${{ secrets.SFTP_PORT }}
-        local_path: './build/*'
-        remote_path: ${{ secrets.SFTP_TARGET_DIR }}
-        sftp_only: true
+      run: |
+        sudo apt-get update && sudo apt-get install -y lftp
+        lftp -u "${{ secrets.SFTP_USERNAME }},${{ secrets.SFTP_PASSWORD }}" \
+             -e "set sftp:auto-confirm yes; set ssl:verify-certificate no; mirror -R --verbose ./build/ ./; quit" \
+             sftp://${{ secrets.SFTP_HOST }}:${{ secrets.SFTP_PORT }}
