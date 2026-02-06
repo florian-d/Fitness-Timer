@@ -326,4 +326,120 @@ describe('Timer Component', () => {
       consoleWarnSpy.mockRestore();
     });
   });
+
+  describe('Wake Lock', () => {
+    let mockWakeLockRequest: jest.Mock;
+    let mockWakeLockRelease: jest.Mock;
+    let mockWakeLockSentinel: any;
+
+    beforeEach(() => {
+      mockWakeLockRelease = jest.fn().mockResolvedValue(undefined);
+      mockWakeLockSentinel = {
+        released: false,
+        type: 'screen',
+        release: mockWakeLockRelease,
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      };
+      mockWakeLockRequest = jest.fn().mockResolvedValue(mockWakeLockSentinel);
+      (navigator as any).wakeLock = { request: mockWakeLockRequest };
+    });
+
+    afterEach(() => {
+      delete (navigator as any).wakeLock;
+    });
+
+    test('requests wake lock during exercise phase', async () => {
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      });
+
+      // Wait for wake lock to be requested
+      await waitFor(() => {
+        expect(mockWakeLockRequest).toHaveBeenCalledWith('screen');
+      });
+    });
+
+    test('releases wake lock during rest phase', async () => {
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      });
+
+      // Advance through exercise time to rest
+      jest.advanceTimersByTime(3000);
+
+      await waitFor(() => {
+        expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+      });
+
+      // Wake lock should be released during rest
+      await waitFor(() => {
+        expect(mockWakeLockRelease).toHaveBeenCalled();
+      });
+    });
+
+    test('releases wake lock when paused during exercise', async () => {
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      });
+
+      // Wait for wake lock to be requested
+      await waitFor(() => {
+        expect(mockWakeLockRequest).toHaveBeenCalledWith('screen');
+      });
+
+      // Pause the timer
+      const pauseButton = screen.getByLabelText(/pause/i);
+      fireEvent.click(pauseButton);
+
+      // Wake lock should be released when paused
+      await waitFor(() => {
+        expect(mockWakeLockRelease).toHaveBeenCalled();
+      });
+    });
+
+    test('requests wake lock again when resuming exercise', async () => {
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      });
+
+      // Pause the timer
+      const pauseButton = screen.getByLabelText(/pause/i);
+      fireEvent.click(pauseButton);
+
+      await waitFor(() => {
+        expect(mockWakeLockRelease).toHaveBeenCalled();
+      });
+
+      // Clear mock to track new calls
+      jest.clearAllMocks();
+      mockWakeLockRequest.mockResolvedValue(mockWakeLockSentinel);
+
+      // Resume the timer
+      const resumeButton = screen.getByLabelText(/resume/i);
+      fireEvent.click(resumeButton);
+
+      // Wake lock should be requested again
+      await waitFor(() => {
+        expect(mockWakeLockRequest).toHaveBeenCalledWith('screen');
+      });
+    });
+  });
 });
