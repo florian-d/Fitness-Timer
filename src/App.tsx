@@ -18,6 +18,9 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
 
+  const commitSha = process.env.REACT_APP_GIT_SHA;
+  const commitLabel = commitSha ? commitSha.slice(0, 7) : 'dev';
+
   const handleSettingsUpdate = (newSettings: WorkoutSettings) => {
     setSettings(newSettings);
     setShowSettings(false);
@@ -47,6 +50,9 @@ function App() {
           />
         </>
       )}
+      <footer className="app-footer">
+        Commit: {commitLabel}
+      </footer>
     </div>
   );
 }
