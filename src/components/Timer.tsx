@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useRef, useReducer } from 'react';
 import { WorkoutSettings } from '../App';
 import { useWakeLock } from '../hooks/useWakeLock';
+import { trackEvent } from '../utils/analytics';
 import './Timer.css';
 
 interface TimerProps {
@@ -267,9 +268,17 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
       } else {
         playSingleBell();
       }
+
+      // Track workout events in Matomo
+      if (previousPhaseRef.current === 'ready' && state.phase === 'prepare') {
+        trackEvent('Workout', 'Started', `${settings.rounds} rounds`);
+      }
+      if (state.phase === 'complete') {
+        trackEvent('Workout', 'Completed', `${settings.rounds} rounds`);
+      }
     }
     previousPhaseRef.current = state.phase;
-  }, [state.phase, playSingleBell, playDoubleBell]);
+  }, [state.phase, playSingleBell, playDoubleBell, settings.rounds]);
 
   useEffect(() => {
     if (state.isRunning && state.phase !== 'ready' && state.phase !== 'complete') {
