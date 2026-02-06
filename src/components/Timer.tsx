@@ -8,7 +8,7 @@ interface TimerProps {
   onRunningChange: (isRunning: boolean) => void;
 }
 
-type Phase = 'ready' | 'exercise' | 'rest' | 'complete';
+type Phase = 'ready' | 'prepare' | 'exercise' | 'rest' | 'complete';
 
 type TimerState = {
   phase: Phase;
@@ -31,9 +31,9 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
       case 'START':
         if (currentState.phase === 'ready') {
           return {
-            phase: 'exercise',
+            phase: 'prepare',
             currentRound: 1,
-            timeRemaining: settings.exerciseTime,
+            timeRemaining: settings.prepTime,
             isRunning: true,
           };
         }
@@ -41,7 +41,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
           return {
             phase: 'ready',
             currentRound: 1,
-            timeRemaining: settings.exerciseTime,
+            timeRemaining: settings.prepTime,
             isRunning: false,
           };
         }
@@ -60,7 +60,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
         return {
           phase: 'ready',
           currentRound: 1,
-          timeRemaining: settings.exerciseTime,
+          timeRemaining: settings.prepTime,
           isRunning: false,
         };
       case 'SYNC_SETTINGS':
@@ -68,16 +68,23 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
           return {
             ...currentState,
             currentRound: 1,
-            timeRemaining: settings.exerciseTime,
+            timeRemaining: settings.prepTime,
           };
         }
         return currentState;
       case 'TICK':
-        if (!currentState.isRunning || (currentState.phase !== 'exercise' && currentState.phase !== 'rest')) {
+        if (!currentState.isRunning || (currentState.phase !== 'prepare' && currentState.phase !== 'exercise' && currentState.phase !== 'rest')) {
           return currentState;
         }
         if (currentState.timeRemaining > 1) {
           return { ...currentState, timeRemaining: currentState.timeRemaining - 1 };
+        }
+        if (currentState.phase === 'prepare') {
+          return {
+            ...currentState,
+            phase: 'exercise',
+            timeRemaining: settings.exerciseTime,
+          };
         }
         if (currentState.phase === 'exercise') {
           if (currentState.currentRound < settings.rounds) {
@@ -108,7 +115,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [state, dispatch] = useReducer(reducer, {
     phase: 'ready',
     currentRound: 1,
-    timeRemaining: settings.exerciseTime,
+    timeRemaining: settings.prepTime,
     isRunning: false,
   });
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -222,6 +229,8 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
 
   const getPhaseColor = (): string => {
     switch (state.phase) {
+      case 'prepare':
+        return '#F59E0B'; // Yellow
       case 'exercise':
         return '#EF4444'; // Red
       case 'rest':
@@ -237,6 +246,8 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
     switch (state.phase) {
       case 'ready':
         return 'READY?';
+      case 'prepare':
+        return 'GET READY!';
       case 'exercise':
         return `EXERCISE - Round ${state.currentRound}/${settings.rounds}`;
       case 'rest':
@@ -250,8 +261,8 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
 
   useEffect(() => {
     if (previousPhaseRef.current && previousPhaseRef.current !== state.phase && state.phase !== 'ready') {
-      // Play double bell when transitioning from rest to exercise
-      if (previousPhaseRef.current === 'rest' && state.phase === 'exercise') {
+      // Play double bell when transitioning to exercise (from prepare or rest)
+      if (state.phase === 'exercise') {
         playDoubleBell();
       } else {
         playSingleBell();
@@ -283,7 +294,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
 
   useEffect(() => {
     dispatch({ type: 'SYNC_SETTINGS' });
-  }, [settings.exerciseTime, settings.restTime, settings.rounds]);
+  }, [settings.exerciseTime, settings.restTime, settings.rounds, settings.prepTime]);
 
   const handleStartPause = () => {
     unlockAudio();

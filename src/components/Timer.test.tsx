@@ -7,6 +7,7 @@ const mockSettings: WorkoutSettings = {
   rounds: 2,
   exerciseTime: 3,
   restTime: 2,
+  prepTime: 2,
 };
 
 const mockOnRunningChange = jest.fn();
@@ -53,7 +54,7 @@ describe('Timer Component', () => {
     fireEvent.click(startButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText(/get ready!/i)).toBeInTheDocument();
     });
   });
 
@@ -63,7 +64,7 @@ describe('Timer Component', () => {
     fireEvent.click(startButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/0:03/)).toBeInTheDocument();
+      expect(screen.getByText(/0:02/)).toBeInTheDocument();
     });
   });
 
@@ -72,7 +73,16 @@ describe('Timer Component', () => {
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
+    // Prepare phase
     await waitFor(() => {
+      expect(screen.getByText(/0:02/)).toBeInTheDocument();
+    });
+
+    // Advance through prepare time to exercise
+    advanceTime(2000);
+    
+    await waitFor(() => {
+      expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
       expect(screen.getByText(/0:03/)).toBeInTheDocument();
     });
 
@@ -87,6 +97,9 @@ describe('Timer Component', () => {
     render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
+
+    // Advance through prepare time
+    advanceTime(2000);
 
     await waitFor(() => {
       expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
@@ -104,6 +117,9 @@ describe('Timer Component', () => {
     render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
+
+    // Advance through prepare time
+    advanceTime(2000);
 
     await waitFor(() => {
       expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
@@ -129,6 +145,9 @@ describe('Timer Component', () => {
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
+    // Prepare phase
+    advanceTime(2000);
+
     // Round 1 exercise + rest
     advanceTime(3000);
     await waitFor(() => {
@@ -152,6 +171,9 @@ describe('Timer Component', () => {
     render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
+
+    // Advance through prepare to exercise
+    advanceTime(2000);
 
     await waitFor(() => {
       expect(screen.getByText(/0:03/)).toBeInTheDocument();
@@ -179,6 +201,9 @@ describe('Timer Component', () => {
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
+    // Advance through prepare to exercise
+    advanceTime(2000);
+
     await waitFor(() => {
       expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
     });
@@ -201,6 +226,116 @@ describe('Timer Component', () => {
 
     await waitFor(() => {
       expect(mockOnRunningChange).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('Preparation Phase', () => {
+    test('shows preparation phase after start', async () => {
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/get ready!/i)).toBeInTheDocument();
+        expect(screen.getByText(/0:02/)).toBeInTheDocument();
+      });
+    });
+
+    test('transitions from prepare to exercise', async () => {
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/get ready!/i)).toBeInTheDocument();
+      });
+
+      // Advance through prepare time
+      advanceTime(2000);
+
+      await waitFor(() => {
+        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      });
+    });
+
+    test('counts down during prepare phase', async () => {
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/0:02/)).toBeInTheDocument();
+      });
+
+      advanceTime(1000);
+
+      await waitFor(() => {
+        expect(screen.getByText(/0:01/)).toBeInTheDocument();
+      });
+    });
+
+    test('can pause during prepare phase', async () => {
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/get ready!/i)).toBeInTheDocument();
+      });
+
+      const pauseButton = screen.getByLabelText(/pause/i);
+      fireEvent.click(pauseButton);
+
+      // Time should not advance when paused
+      advanceTime(2000);
+      expect(screen.getByText(/0:02/)).toBeInTheDocument();
+    });
+
+    test('displays yellow background during prepare phase', async () => {
+      const { container } = render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        const timerContainer = container.querySelector('.timer-container');
+        expect(timerContainer).toHaveStyle({ backgroundColor: '#F59E0B' });
+      });
+    });
+
+    test('plays double bell when exercise starts after prepare', async () => {
+      // Mock HTMLAudioElement
+      const mockPlay = jest.fn().mockResolvedValue(undefined);
+      const audioInstances: any[] = [];
+
+      (window as any).Audio = jest.fn((src: string) => {
+        const mockAudio = {
+          play: mockPlay,
+          pause: jest.fn(),
+          volume: 0,
+          currentTime: 0,
+          preload: '',
+          src: src,
+        };
+        audioInstances.push(mockAudio);
+        return mockAudio;
+      });
+
+      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      // Clear any previous calls
+      mockPlay.mockClear();
+
+      // Advance through prepare time to trigger exercise
+      advanceTime(2000);
+
+      await waitFor(() => {
+        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      });
+
+      // Verify bell sound was played (double bell = bell_twice.mp3)
+      expect(mockPlay).toHaveBeenCalled();
     });
   });
 
@@ -231,11 +366,14 @@ describe('Timer Component', () => {
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
+      // Advance through prepare time
+      advanceTime(2000);
+
       await waitFor(() => {
         expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
       });
 
-      // Clear previous calls (from ready to exercise transition)
+      // Clear previous calls (from prepare to exercise transition)
       jest.clearAllMocks();
 
       // Advance through exercise time to trigger bell
@@ -253,6 +391,9 @@ describe('Timer Component', () => {
       render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
+
+      // Advance through prepare time
+      advanceTime(2000);
 
       // Advance through exercise time
       advanceTime(3000);
@@ -279,6 +420,9 @@ describe('Timer Component', () => {
       render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
+
+      // Advance through prepare time
+      advanceTime(2000);
 
       await waitFor(() => {
         expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
@@ -321,6 +465,9 @@ describe('Timer Component', () => {
       render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
+
+      // Advance through prepare time
+      advanceTime(2000);
 
       // Advance through exercise time
       advanceTime(3000);
@@ -366,6 +513,9 @@ describe('Timer Component', () => {
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
+      // Advance through prepare time
+      advanceTime(2000);
+
       await waitFor(() => {
         expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
       });
@@ -380,6 +530,9 @@ describe('Timer Component', () => {
       render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
+
+      // Advance through prepare time
+      advanceTime(2000);
 
       await waitFor(() => {
         expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
@@ -402,6 +555,9 @@ describe('Timer Component', () => {
       render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
+
+      // Advance through prepare time
+      advanceTime(2000);
 
       await waitFor(() => {
         expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
@@ -426,6 +582,9 @@ describe('Timer Component', () => {
       render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
+
+      // Advance through prepare time
+      advanceTime(2000);
 
       await waitFor(() => {
         expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();

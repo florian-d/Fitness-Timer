@@ -7,6 +7,7 @@ export interface WorkoutSettings {
   rounds: number;
   exerciseTime: number; // in seconds
   restTime: number; // in seconds
+  prepTime: number; // in seconds
 }
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
     rounds: 8,
     exerciseTime: 30,
     restTime: 10,
+    prepTime: 10,
   });
   const [showSettings, setShowSettings] = useState(false);
   const [isRunning, setIsRunning] = useState(false);

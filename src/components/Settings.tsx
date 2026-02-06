@@ -12,12 +12,14 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
   const [rounds, setRounds] = useState(settings.rounds);
   const [exerciseTime, setExerciseTime] = useState(settings.exerciseTime);
   const [restTime, setRestTime] = useState(settings.restTime);
+  const [prepTime, setPrepTime] = useState(settings.prepTime);
 
   const handleSave = () => {
     onSave({
       rounds,
       exerciseTime,
       restTime,
+      prepTime,
     });
   };
 
@@ -105,6 +107,33 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
             <button 
               onClick={() => setRestTime(Math.min(300, restTime + 5))}
               aria-label="Increase rest time"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div className="setting-item">
+          <label htmlFor="prep-time">Preparation Time (seconds)</label>
+          <div className="input-group">
+            <button 
+              onClick={() => setPrepTime(Math.max(3, prepTime - 1))}
+              aria-label="Decrease preparation time"
+            >
+              −
+            </button>
+            <input
+              id="prep-time"
+              type="number"
+              min="3"
+              max="30"
+              step="1"
+              value={prepTime}
+              onChange={(e) => setPrepTime(Math.max(3, parseInt(e.target.value) || 3))}
+            />
+            <button 
+              onClick={() => setPrepTime(Math.min(30, prepTime + 1))}
+              aria-label="Increase preparation time"
             >
               +
             </button>
