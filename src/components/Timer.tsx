@@ -125,12 +125,8 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   };
 
   const nextPhase = useCallback(() => {
-    // Determine if transitioning from rest to exercise
-    const isRestToExercise = phase === 'rest';
-    
-    // Play bell sound when transitioning (timer reached zero)
-    // Play twice for rest to exercise, once for other transitions
-    playBellSound(isRestToExercise ? 2 : 1);
+    // Play one bell sound on every transition
+    playBellSound(1);
     
     if (phase === 'ready') {
       setPhase('exercise');
