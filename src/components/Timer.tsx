@@ -116,6 +116,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   });
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const doubleBellAudioRef = useRef<HTMLAudioElement | null>(null);
   const audioUnlockedRef = useRef(false);
   const previousPhaseRef = useRef<Phase | null>(null);
 
@@ -133,9 +134,13 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
       audioRef.current = new Audio('/bell.mp3');
       audioRef.current.preload = 'auto';
       audioRef.current.volume = 0.3;
+      doubleBellAudioRef.current = new Audio('/bell_twice.mp3');
+      doubleBellAudioRef.current.preload = 'auto';
+      doubleBellAudioRef.current.volume = 0.3;
     } catch (error) {
       console.warn('Audio initialization failed:', error);
       audioRef.current = null;
+      doubleBellAudioRef.current = null;
     }
 
     return () => {
@@ -148,6 +153,16 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
           console.warn('Audio cleanup failed:', error);
         }
         audioRef.current = null;
+      }
+      if (doubleBellAudioRef.current) {
+        try {
+          if (typeof doubleBellAudioRef.current.pause === 'function') {
+            doubleBellAudioRef.current.pause();
+          }
+        } catch (error) {
+          console.warn('Audio cleanup failed:', error);
+        }
+        doubleBellAudioRef.current = null;
       }
     };
   }, []);
@@ -177,19 +192,19 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
     }
   }, []);
 
-  const playSingleBell = useCallback(() => {
-    if (!audioRef.current) {
+  const playAudio = useCallback((audioElement: HTMLAudioElement | null) => {
+    if (!audioElement) {
       return;
     }
     try {
-      if (typeof audioRef.current.play !== 'function') {
+      if (typeof audioElement.play !== 'function') {
         return;
       }
-      if (typeof audioRef.current.pause === 'function') {
-        audioRef.current.pause();
+      if (typeof audioElement.pause === 'function') {
+        audioElement.pause();
       }
-      audioRef.current.currentTime = 0;
-      const playResult = audioRef.current.play();
+      audioElement.currentTime = 0;
+      const playResult = audioElement.play();
       if (playResult && typeof playResult.catch === 'function') {
         playResult.catch((error) => {
           console.warn('Audio playback failed:', error);
@@ -200,18 +215,13 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
     }
   }, []);
 
-  const playBellSound = useCallback((times: number = 1) => {
-    try {
-      // Play bell sound the specified number of times
-      for (let i = 0; i < times; i++) {
-        setTimeout(() => {
-          playSingleBell();
-        }, i * BELL_SOUND_DELAY_MS);
-      }
-    } catch (error) {
-      console.warn('Audio playback not supported:', error);
-    }
-  }, [playSingleBell]);
+  const playSingleBell = useCallback(() => {
+    playAudio(audioRef.current);
+  }, [playAudio]);
+
+  const playDoubleBell = useCallback(() => {
+    playAudio(doubleBellAudioRef.current);
+  }, [playAudio]);
 
   const getPhaseColor = (): string => {
     switch (state.phase) {
@@ -243,10 +253,15 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
 
   useEffect(() => {
     if (previousPhaseRef.current && previousPhaseRef.current !== state.phase && state.phase !== 'ready') {
-      playBellSound(1);
+      // Play double bell when transitioning from rest to exercise
+      if (previousPhaseRef.current === 'rest' && state.phase === 'exercise') {
+        playDoubleBell();
+      } else {
+        playSingleBell();
+      }
     }
     previousPhaseRef.current = state.phase;
-  }, [state.phase, playBellSound]);
+  }, [state.phase, playSingleBell, playDoubleBell]);
 
   useEffect(() => {
     if (state.isRunning && state.phase !== 'ready' && state.phase !== 'complete') {
