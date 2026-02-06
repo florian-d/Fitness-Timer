@@ -10,9 +10,6 @@ interface TimerProps {
 
 type Phase = 'ready' | 'exercise' | 'rest' | 'complete';
 
-// Delay in milliseconds between consecutive bell sounds
-const BELL_SOUND_DELAY_MS = 300;
-
 type TimerState = {
   phase: Phase;
   currentRound: number;
