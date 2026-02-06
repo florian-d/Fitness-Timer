@@ -38,11 +38,12 @@ jobs:
       run: npm run build
 
     - name: Deploy to SFTP
-      uses: appleboy/scp-action@v0.1.7
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
-        host: ${{ secrets.SFTP_HOST }}
+        server: ${{ secrets.SFTP_HOST }}
         username: ${{ secrets.SFTP_USERNAME }}
         password: ${{ secrets.SFTP_PASSWORD }}
         port: ${{ secrets.SFTP_PORT }}
-        source: "build/**"
-        target: ${{ secrets.SFTP_TARGET_DIR }}
+        local_path: './build/*'
+        remote_path: ${{ secrets.SFTP_TARGET_DIR }}
+        sftp_only: true
