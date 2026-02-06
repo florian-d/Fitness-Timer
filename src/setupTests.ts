@@ -3,3 +3,16 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+// Mock HTMLMediaElement methods not implemented in JSDOM
+Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
+	configurable: true,
+	writable: true,
+	value: jest.fn().mockResolvedValue(undefined),
+});
+
+Object.defineProperty(window.HTMLMediaElement.prototype, 'pause', {
+	configurable: true,
+	writable: true,
+	value: jest.fn(),
+});

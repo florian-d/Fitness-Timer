@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import Timer from './Timer';
 import { WorkoutSettings } from '../App';
 
@@ -11,6 +11,25 @@ const mockSettings: WorkoutSettings = {
 
 const mockOnRunningChange = jest.fn();
 
+const advanceTime = (ms: number) => {
+  act(() => {
+    jest.advanceTimersByTime(ms);
+  });
+};
+
+const runPendingTimers = () => {
+  act(() => {
+    jest.runOnlyPendingTimers();
+  });
+};
+
+const clickWithAct = async (element: HTMLElement) => {
+  await act(async () => {
+    fireEvent.click(element);
+    await Promise.resolve();
+  });
+};
+
 describe('Timer Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -18,7 +37,7 @@ describe('Timer Component', () => {
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
+    runPendingTimers();
     jest.useRealTimers();
   });
 
@@ -57,7 +76,7 @@ describe('Timer Component', () => {
       expect(screen.getByText(/0:03/)).toBeInTheDocument();
     });
 
-    jest.advanceTimersByTime(1000);
+    advanceTime(1000);
     
     await waitFor(() => {
       expect(screen.getByText(/0:02/)).toBeInTheDocument();
@@ -74,7 +93,7 @@ describe('Timer Component', () => {
     });
 
     // Advance through exercise time
-    jest.advanceTimersByTime(3000);
+    advanceTime(3000);
 
     await waitFor(() => {
       expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
@@ -91,14 +110,14 @@ describe('Timer Component', () => {
     });
 
     // Advance through exercise time
-    jest.advanceTimersByTime(3000);
+    advanceTime(3000);
 
     await waitFor(() => {
       expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
     });
 
     // Advance through rest time
-    jest.advanceTimersByTime(2000);
+    advanceTime(2000);
 
     await waitFor(() => {
       expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
@@ -111,18 +130,18 @@ describe('Timer Component', () => {
     fireEvent.click(startButton);
 
     // Round 1 exercise + rest
-    jest.advanceTimersByTime(3000);
+    advanceTime(3000);
     await waitFor(() => {
       expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
     });
 
-    jest.advanceTimersByTime(2000);
+    advanceTime(2000);
     await waitFor(() => {
       expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
     });
 
     // Round 2 exercise (final round, no rest after)
-    jest.advanceTimersByTime(3000);
+    advanceTime(3000);
 
     await waitFor(() => {
       expect(screen.getByText(/complete!/i)).toBeInTheDocument();
@@ -142,13 +161,13 @@ describe('Timer Component', () => {
     fireEvent.click(pauseButton);
 
     // Time should not advance when paused
-    jest.advanceTimersByTime(2000);
+    advanceTime(2000);
     expect(screen.getByText(/0:03/)).toBeInTheDocument();
 
     const resumeButton = screen.getByLabelText(/resume/i);
     fireEvent.click(resumeButton);
 
-    jest.advanceTimersByTime(1000);
+    advanceTime(1000);
     
     await waitFor(() => {
       expect(screen.getByText(/0:02/)).toBeInTheDocument();
@@ -164,7 +183,7 @@ describe('Timer Component', () => {
       expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
     });
 
-    jest.advanceTimersByTime(1000);
+    advanceTime(1000);
 
     const resetButton = screen.getByLabelText(/reset/i);
     fireEvent.click(resetButton);
@@ -220,7 +239,7 @@ describe('Timer Component', () => {
       jest.clearAllMocks();
 
       // Advance through exercise time to trigger bell
-      jest.advanceTimersByTime(3000);
+      advanceTime(3000);
 
       await waitFor(() => {
         expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
@@ -236,7 +255,7 @@ describe('Timer Component', () => {
       fireEvent.click(startButton);
 
       // Advance through exercise time
-      jest.advanceTimersByTime(3000);
+      advanceTime(3000);
 
       await waitFor(() => {
         expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
@@ -246,7 +265,7 @@ describe('Timer Component', () => {
       jest.clearAllMocks();
 
       // Advance through rest time to trigger bell
-      jest.advanceTimersByTime(2000);
+      advanceTime(2000);
 
       await waitFor(() => {
         expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
@@ -266,13 +285,13 @@ describe('Timer Component', () => {
       });
 
       // Complete all rounds
-      jest.advanceTimersByTime(3000); // Round 1 exercise
+      advanceTime(3000); // Round 1 exercise
       
       await waitFor(() => {
         expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
       });
 
-      jest.advanceTimersByTime(2000); // Round 1 rest
+      advanceTime(2000); // Round 1 rest
 
       await waitFor(() => {
         expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
@@ -281,7 +300,7 @@ describe('Timer Component', () => {
       // Clear previous calls
       jest.clearAllMocks();
 
-      jest.advanceTimersByTime(3000); // Round 2 exercise (final)
+      advanceTime(3000); // Round 2 exercise (final)
 
       await waitFor(() => {
         expect(screen.getByText(/complete!/i)).toBeInTheDocument();
@@ -304,7 +323,7 @@ describe('Timer Component', () => {
       fireEvent.click(startButton);
 
       // Advance through exercise time
-      jest.advanceTimersByTime(3000);
+      advanceTime(3000);
 
       await waitFor(() => {
         expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
@@ -312,8 +331,8 @@ describe('Timer Component', () => {
 
       // App should continue working despite audio error
       expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
-      // With new implementation, errors in Audio constructor are caught by inner try-catch
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Audio playback failed:', expect.any(Error));
+      // With new implementation, errors in Audio constructor are caught on initialization
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Audio initialization failed:', expect.any(Error));
 
       consoleWarnSpy.mockRestore();
     });
@@ -367,7 +386,7 @@ describe('Timer Component', () => {
       });
 
       // Advance through exercise time to rest
-      jest.advanceTimersByTime(3000);
+      advanceTime(3000);
 
       await waitFor(() => {
         expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();

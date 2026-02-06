@@ -140,7 +140,13 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
 
     return () => {
       if (audioRef.current) {
-        audioRef.current.pause();
+        try {
+          if (typeof audioRef.current.pause === 'function') {
+            audioRef.current.pause();
+          }
+        } catch (error) {
+          console.warn('Audio cleanup failed:', error);
+        }
         audioRef.current = null;
       }
     };
@@ -150,19 +156,25 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
     if (!audioRef.current || audioUnlockedRef.current) {
       return;
     }
-    audioRef.current
-      .play()
-      .then(() => {
-        if (!audioRef.current) {
-          return;
-        }
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        audioUnlockedRef.current = true;
-      })
-      .catch(() => {
-        // Ignore unlock errors; iOS may block until a user gesture is detected
-      });
+    try {
+      const playResult = audioRef.current.play();
+      if (playResult && typeof playResult.then === 'function') {
+        playResult
+          .then(() => {
+            if (!audioRef.current) {
+              return;
+            }
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            audioUnlockedRef.current = true;
+          })
+          .catch(() => {
+            // Ignore unlock errors; iOS may block until a user gesture is detected
+          });
+      }
+    } catch (error) {
+      // Ignore unlock errors; browsers may block without a user gesture
+    }
   }, []);
 
   const playSingleBell = useCallback(() => {
@@ -170,11 +182,19 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
       return;
     }
     try {
-      audioRef.current.pause();
+      if (typeof audioRef.current.play !== 'function') {
+        return;
+      }
+      if (typeof audioRef.current.pause === 'function') {
+        audioRef.current.pause();
+      }
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch((error) => {
-        console.warn('Audio playback failed:', error);
-      });
+      const playResult = audioRef.current.play();
+      if (playResult && typeof playResult.catch === 'function') {
+        playResult.catch((error) => {
+          console.warn('Audio playback failed:', error);
+        });
+      }
     } catch (error) {
       console.warn('Audio playback failed:', error);
     }
