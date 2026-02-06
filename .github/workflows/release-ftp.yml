@@ -1,13 +1,10 @@
 name: Release and Deploy to FTP
 
 on:
-  # Trigger on tag push (version releases)
+  # Trigger on push to main branch
   push:
-    tags:
-      - 'v*'
-  # Trigger on release creation
-  release:
-    types: [published]
+    branches:
+      - main
   # Allow manual trigger
   workflow_dispatch:
 
