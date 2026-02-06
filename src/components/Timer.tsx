@@ -9,13 +9,15 @@ interface TimerProps {
 
 type Phase = 'ready' | 'exercise' | 'rest' | 'complete';
 
+// Delay in milliseconds between consecutive bell sounds
+const BELL_SOUND_DELAY_MS = 300;
+
 const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const [phase, setPhase] = useState<Phase>('ready');
   const [currentRound, setCurrentRound] = useState(1);
   const [timeRemaining, setTimeRemaining] = useState(settings.exerciseTime);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -23,19 +25,23 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const playBellSound = useCallback(() => {
+  const playBellSound = useCallback((times: number = 1) => {
     try {
-      // Initialize audio element lazily (only when needed)
-      if (!audioRef.current) {
-        audioRef.current = new Audio('/bell.mp3');
-        audioRef.current.volume = 0.3;
+      // Play bell sound the specified number of times
+      // Each bell gets its own Audio instance so they can overlap
+      for (let i = 0; i < times; i++) {
+        setTimeout(() => {
+          try {
+            const audio = new Audio('/bell.mp3');
+            audio.volume = 0.3;
+            audio.play().catch((error) => {
+              console.warn('Audio playback failed:', error);
+            });
+          } catch (error) {
+            console.warn('Audio playback failed:', error);
+          }
+        }, i * BELL_SOUND_DELAY_MS);
       }
-      
-      // Reset audio to start and play
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch((error) => {
-        console.warn('Audio playback failed:', error);
-      });
     } catch (error) {
       console.warn('Audio playback not supported:', error);
     }
@@ -70,8 +76,12 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   };
 
   const nextPhase = useCallback(() => {
+    // Determine if transitioning from rest to exercise
+    const isRestToExercise = phase === 'rest';
+    
     // Play bell sound when transitioning (timer reached zero)
-    playBellSound();
+    // Play twice for rest to exercise, once for other transitions
+    playBellSound(isRestToExercise ? 2 : 1);
     
     if (phase === 'ready') {
       setPhase('exercise');

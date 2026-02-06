@@ -187,20 +187,24 @@ describe('Timer Component', () => {
 
   describe('Bell Sound', () => {
     let mockPlay: jest.Mock;
-    let mockAudio: any;
+    let audioInstances: any[];
 
     beforeEach(() => {
       // Mock HTMLAudioElement
       mockPlay = jest.fn().mockResolvedValue(undefined);
-      mockAudio = {
-        play: mockPlay,
-        pause: jest.fn(),
-        volume: 0,
-        currentTime: 0,
-      };
+      audioInstances = [];
 
-      // Mock Audio constructor
-      (window as any).Audio = jest.fn(() => mockAudio);
+      // Mock Audio constructor to track all instances
+      (window as any).Audio = jest.fn(() => {
+        const mockAudio = {
+          play: mockPlay,
+          pause: jest.fn(),
+          volume: 0,
+          currentTime: 0,
+        };
+        audioInstances.push(mockAudio);
+        return mockAudio;
+      });
     });
 
     test('plays bell sound when exercise phase completes', async () => {
@@ -212,6 +216,9 @@ describe('Timer Component', () => {
         expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
       });
 
+      // Clear previous calls (from ready to exercise transition)
+      jest.clearAllMocks();
+
       // Advance through exercise time to trigger bell
       jest.advanceTimersByTime(3000);
 
@@ -219,9 +226,8 @@ describe('Timer Component', () => {
         expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
       });
 
-      // Verify bell sound was played
-      expect(window.Audio).toHaveBeenCalledWith('/bell.wav');
-      expect(mockPlay).toHaveBeenCalled();
+      // Verify bell sound was played once (exercise to rest transition)
+      expect(mockPlay).toHaveBeenCalledTimes(1);
     });
 
     test('plays bell sound when rest phase completes', async () => {
@@ -246,8 +252,16 @@ describe('Timer Component', () => {
         expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
       });
 
-      // Verify bell sound was played (Audio already created, so just check play)
-      expect(mockPlay).toHaveBeenCalled();
+      // Verify bell sound was played twice (rest to exercise transition)
+      // First bell plays immediately
+      expect(mockPlay).toHaveBeenCalledTimes(1);
+      
+      // Advance timer to allow second bell to play (300ms delay)
+      jest.advanceTimersByTime(300);
+      
+      await waitFor(() => {
+        expect(mockPlay).toHaveBeenCalledTimes(2);
+      });
     });
 
     test('plays bell sound when workout completes', async () => {
@@ -306,7 +320,8 @@ describe('Timer Component', () => {
 
       // App should continue working despite audio error
       expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Audio playback not supported:', expect.any(Error));
+      // With new implementation, errors in Audio constructor are caught by inner try-catch
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Audio playback failed:', expect.any(Error));
 
       consoleWarnSpy.mockRestore();
     });
