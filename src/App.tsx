@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Timer from './components/Timer';
 import Settings from './components/Settings';
+import { loadSettings, saveSettings } from './utils/localStorage';
 import './App.css';
 
 export interface WorkoutSettings {
@@ -11,14 +12,22 @@ export interface WorkoutSettings {
 }
 
 function App() {
-  const [settings, setSettings] = useState<WorkoutSettings>({
-    rounds: 8,
-    exerciseTime: 30,
-    restTime: 10,
-    prepTime: 10,
+  const [settings, setSettings] = useState<WorkoutSettings>(() => {
+    // Load settings from localStorage on initial render
+    return loadSettings();
   });
   const [showSettings, setShowSettings] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
+  const isInitialMount = useRef(true);
+
+  // Save settings to localStorage whenever they change (skip initial mount)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    saveSettings(settings);
+  }, [settings]);
 
   const commitSha = process.env.REACT_APP_GIT_SHA;
   const commitLabel = commitSha ? commitSha.slice(0, 7) : 'dev';
