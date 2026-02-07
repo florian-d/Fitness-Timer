@@ -26,6 +26,9 @@ export const trackEvent = (
     if (value !== undefined) {
       eventData.push(value);
     }
+    console.log('[Matomo] Tracking event:', eventData);
     window._paq.push(eventData);
+  } else {
+    console.warn('[Matomo] _paq not available. Event not tracked:', { category, action, name, value });
   }
 };
