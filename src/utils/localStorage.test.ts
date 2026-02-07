@@ -47,6 +47,7 @@ describe('localStorage utilities', () => {
         rounds: 10,
         exerciseTime: 45,
         restTime: 15,
+        prepTime: 10,
       };
 
       const result = saveSettings(settings);
@@ -67,6 +68,7 @@ describe('localStorage utilities', () => {
         rounds: 10,
         exerciseTime: 45,
         restTime: 15,
+        prepTime: 10,
       };
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
@@ -94,6 +96,7 @@ describe('localStorage utilities', () => {
         rounds: 10,
         exerciseTime: 45,
         restTime: 15,
+        prepTime: 10,
       };
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -119,6 +122,7 @@ describe('localStorage utilities', () => {
         rounds: 12,
         exerciseTime: 60,
         restTime: 20,
+        prepTime: 15,
       };
 
       store['fitnessTimerSettings'] = JSON.stringify(storedSettings);
@@ -133,7 +137,7 @@ describe('localStorage utilities', () => {
       const partialSettings = {
         rounds: 15,
         exerciseTime: 40,
-        // missing restTime
+        // missing restTime and prepTime
       };
 
       store['fitnessTimerSettings'] = JSON.stringify(partialSettings);
@@ -144,6 +148,7 @@ describe('localStorage utilities', () => {
         rounds: 15,
         exerciseTime: 40,
         restTime: DEFAULT_SETTINGS.restTime, // Should use default
+        prepTime: DEFAULT_SETTINGS.prepTime, // Should use default
       });
     });
 
@@ -152,6 +157,7 @@ describe('localStorage utilities', () => {
         rounds: 'invalid',
         exerciseTime: 45,
         restTime: 15,
+        prepTime: 10,
       };
 
       store['fitnessTimerSettings'] = JSON.stringify(invalidSettings);
@@ -161,6 +167,7 @@ describe('localStorage utilities', () => {
       expect(settings.rounds).toBe(DEFAULT_SETTINGS.rounds); // Should fallback to default
       expect(settings.exerciseTime).toBe(45);
       expect(settings.restTime).toBe(15);
+      expect(settings.prepTime).toBe(10);
     });
 
     test('validates stored values are positive', () => {
@@ -168,6 +175,7 @@ describe('localStorage utilities', () => {
         rounds: -5,
         exerciseTime: 45,
         restTime: 0,
+        prepTime: 10,
       };
 
       store['fitnessTimerSettings'] = JSON.stringify(invalidSettings);
@@ -177,6 +185,7 @@ describe('localStorage utilities', () => {
       expect(settings.rounds).toBe(DEFAULT_SETTINGS.rounds); // Should fallback to default
       expect(settings.exerciseTime).toBe(45);
       expect(settings.restTime).toBe(DEFAULT_SETTINGS.restTime); // Should fallback to default
+      expect(settings.prepTime).toBe(10);
     });
 
     test('returns default settings when localStorage has invalid JSON', () => {
@@ -217,6 +226,7 @@ describe('localStorage utilities', () => {
         rounds: 10,
         exerciseTime: 45,
         restTime: 15,
+        prepTime: 10,
       };
 
       store['fitnessTimerSettings'] = JSON.stringify(settings);

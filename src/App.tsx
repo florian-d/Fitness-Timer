@@ -8,6 +8,7 @@ export interface WorkoutSettings {
   rounds: number;
   exerciseTime: number; // in seconds
   restTime: number; // in seconds
+  prepTime: number; // in seconds
 }
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
     }
     saveSettings(settings);
   }, [settings]);
+
+  const commitSha = process.env.REACT_APP_GIT_SHA;
+  const commitLabel = commitSha ? commitSha.slice(0, 7) : 'dev';
 
   const handleSettingsUpdate = (newSettings: WorkoutSettings) => {
     setSettings(newSettings);
@@ -57,6 +61,9 @@ function App() {
           />
         </>
       )}
+      <footer className="app-footer">
+        Commit: {commitLabel}
+      </footer>
     </div>
   );
 }

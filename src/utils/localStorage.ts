@@ -7,6 +7,7 @@ export const DEFAULT_SETTINGS: WorkoutSettings = {
   rounds: 8,
   exerciseTime: 30,
   restTime: 10,
+  prepTime: 10,
 };
 
 /**
@@ -81,6 +82,9 @@ export const loadSettings = (): WorkoutSettings => {
       restTime: typeof mergedSettings.restTime === 'number' && mergedSettings.restTime > 0
         ? mergedSettings.restTime
         : DEFAULT_SETTINGS.restTime,
+      prepTime: typeof mergedSettings.prepTime === 'number' && mergedSettings.prepTime > 0
+        ? mergedSettings.prepTime
+        : DEFAULT_SETTINGS.prepTime,
     };
   } catch (error) {
     console.error('Failed to load settings from localStorage:', error);

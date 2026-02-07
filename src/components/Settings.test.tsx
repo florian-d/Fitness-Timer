@@ -7,6 +7,7 @@ const mockSettings: WorkoutSettings = {
   rounds: 8,
   exerciseTime: 30,
   restTime: 10,
+  prepTime: 10,
 };
 
 const mockOnSave = jest.fn();
@@ -23,7 +24,9 @@ describe('Settings Component', () => {
     expect(screen.getByText(/settings/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue('8')).toBeInTheDocument();
     expect(screen.getByDisplayValue('30')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('10')).toBeInTheDocument();
+    // Use getById for fields with same value (rest-time and prep-time both have 10)
+    expect(screen.getByRole('spinbutton', { name: /rest time/i })).toHaveValue(10);
+    expect(screen.getByRole('spinbutton', { name: /preparation time/i })).toHaveValue(10);
   });
 
   test('increments rounds when + button is clicked', () => {
@@ -55,6 +58,7 @@ describe('Settings Component', () => {
       rounds: 1,
       exerciseTime: 30,
       restTime: 10,
+      prepTime: 10,
     };
     
     render(<Settings settings={settingsWithOneRound} onSave={mockOnSave} onClose={mockOnClose} />);
@@ -81,6 +85,7 @@ describe('Settings Component', () => {
       rounds: 9,
       exerciseTime: 30,
       restTime: 10,
+      prepTime: 10,
     });
   });
 

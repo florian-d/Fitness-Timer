@@ -17,6 +17,7 @@ describe('App', () => {
       rounds: 8,
       exerciseTime: 30,
       restTime: 10,
+      prepTime: 10,
     });
     mockSaveSettings.mockReturnValue(true);
   });
@@ -70,6 +71,7 @@ describe('App', () => {
       rounds: 12,
       exerciseTime: 45,
       restTime: 15,
+      prepTime: 12,
     };
     mockLoadSettings.mockReturnValue(customSettings);
 
@@ -98,6 +100,7 @@ describe('App', () => {
         rounds: 9,
         exerciseTime: 30,
         restTime: 10,
+        prepTime: 10,
       });
     });
   });
@@ -107,6 +110,7 @@ describe('App', () => {
       rounds: 15,
       exerciseTime: 60,
       restTime: 20,
+      prepTime: 15,
     };
     mockLoadSettings.mockReturnValue(customSettings);
 
