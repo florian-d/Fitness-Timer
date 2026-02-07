@@ -110,7 +110,7 @@ describe('App', () => {
       rounds: 15,
       exerciseTime: 60,
       restTime: 20,
-      prepTime: 15,
+      prepTime: 12,
     };
     mockLoadSettings.mockReturnValue(customSettings);
 
@@ -123,5 +123,6 @@ describe('App', () => {
     expect(screen.getByDisplayValue('15')).toBeInTheDocument();
     expect(screen.getByDisplayValue('60')).toBeInTheDocument();
     expect(screen.getByDisplayValue('20')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('12')).toBeInTheDocument();
   });
 });
