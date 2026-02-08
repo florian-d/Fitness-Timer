@@ -3,6 +3,12 @@
 		"GitHub": {
 			"url": "https://api.githubcopilot.com/mcp/",
 			"type": "http"
+		},
+		"playwright": {
+			"command": "npx",
+			"args": [
+				"@playwright/mcp@latest"
+			]
 		}
 	},
 	"inputs": []

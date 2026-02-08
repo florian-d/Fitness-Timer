@@ -68,6 +68,24 @@ npm run build      # Production build to build/
 
 No explicit lint script - ESLint configured via `eslintConfig` in `package.json` (extends react-app)
 
+## E2E Testing with Playwright MCP
+
+Playwright is configured via MCP server in `.vscode/mcp.json` for live browser testing.
+
+### Running E2E Tests
+1. Start the dev server: `npm start` (runs in background)
+2. Use Playwright MCP tools to interact with the app at `http://localhost:3000`
+3. Available browser actions: navigate, click, type, wait, take screenshots
+
+### Key Test Scenarios
+- **Timer Flow**: Start → Prepare phase → Exercise phase → Rest phase → Complete
+- **Settings**: Open settings, modify values, verify total time updates
+- **Pause/Resume**: Start timer, pause, verify Resume button appears
+- **Reset**: Reset timer during workout, verify returns to READY state
+
+### Expected Console Warnings (not errors)
+- Audio playback warning on first start (no user interaction before play)
+
 ## CI/CD Pipeline
 
 ### GitHub Actions Workflows
