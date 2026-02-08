@@ -61,8 +61,8 @@ React 18 + TypeScript PWA for High-Intensity Interval Training workouts. Mobile-
 
 ```bash
 npm start          # Dev server on localhost:3000
-npm test           # Interactive test runner
-npm test -- --coverage --watchAll=false  # CI-style test run
+npm test           # Interactive test runner (watch mode)
+npm run test:ci    # Run tests without watch mode (for CI/scripts)
 npm run build      # Production build to build/
 ```
 
