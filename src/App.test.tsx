@@ -30,7 +30,7 @@ describe('App', () => {
 
   test('renders timer in ready state', () => {
     render(<App />);
-    const readyText = screen.getByText(/tap to start/i);
+    const readyText = screen.getByText('timer.tapToStart');
     expect(readyText).toBeInTheDocument();
   });
 
@@ -39,7 +39,7 @@ describe('App', () => {
     const menuButton = screen.getByLabelText(/open settings/i);
     fireEvent.click(menuButton);
     
-    const settingsTitle = screen.getByText(/settings/i);
+    const settingsTitle = screen.getByText('settings.title');
     expect(settingsTitle).toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe('App', () => {
     const closeButton = screen.getByLabelText(/close settings/i);
     fireEvent.click(closeButton);
     
-    const readyText = screen.getByText(/tap to start/i);
+    const readyText = screen.getByText('timer.tapToStart');
     expect(readyText).toBeInTheDocument();
   });
 
@@ -92,7 +92,7 @@ describe('App', () => {
     fireEvent.click(increaseButtons[0]); // Increase rounds
     
     // Save settings
-    const saveButton = screen.getByText(/save & start/i);
+    const saveButton = screen.getByText('settings.save');
     fireEvent.click(saveButton);
 
     await waitFor(() => {

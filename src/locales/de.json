@@ -1,0 +1,28 @@
+{
+  "timer": {
+    "ready": "BEREIT?",
+    "prepare": "MACH DICH BEREIT!",
+    "exercise": "TRAINING - Runde {{current}}/{{total}}",
+    "rest": "PAUSE - Runde {{current}}/{{total}}",
+    "complete": "GESCHAFFT!",
+    "tapToStart": "TIPPEN ZUM STARTEN"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "rounds": "Anzahl der Runden",
+    "exerciseTime": "Trainingszeit (Sekunden)",
+    "restTime": "Pausenzeit (Sekunden)",
+    "prepTime": "Vorbereitungszeit (Sekunden)",
+    "summary": "Workout-Zusammenfassung",
+    "totalTime": "Gesamtzeit: {{minutes}} Minuten",
+    "save": "Speichern & Starten",
+    "language": "Sprache"
+  },
+  "app": {
+    "commit": "Commit: {{label}}"
+  },
+  "languages": {
+    "en": "English",
+    "de": "Deutsch"
+  }
+}
