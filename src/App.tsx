@@ -32,7 +32,26 @@ function App() {
   }, [settings]);
 
   const commitSha = process.env.REACT_APP_GIT_SHA;
+  const commitDate = process.env.REACT_APP_GIT_DATE;
   const commitLabel = commitSha ? commitSha.slice(0, 7) : 'dev';
+  
+  // Format commit date for display (e.g., "2026-02-08 12:34")
+  const formatCommitDate = (isoDate: string | undefined): string => {
+    if (!isoDate) return '';
+    try {
+      const date = new Date(isoDate);
+      return date.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return '';
+    }
+  };
+  const commitDateLabel = formatCommitDate(commitDate);
 
   const handleSettingsUpdate = (newSettings: WorkoutSettings) => {
     setSettings(newSettings);
@@ -65,6 +84,7 @@ function App() {
       )}
       <footer className="app-footer">
         {t('app.commit', { label: commitLabel })}
+        {commitDateLabel && ` (${commitDateLabel})`}
       </footer>
     </div>
   );

@@ -35,6 +35,7 @@ jobs:
       run: npm run build
       env:
         REACT_APP_GIT_SHA: ${{ github.sha }}
+        REACT_APP_GIT_DATE: ${{ github.event.head_commit.timestamp }}
 
     - name: Deploy to SFTP
       run: |

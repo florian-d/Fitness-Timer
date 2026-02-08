@@ -118,6 +118,7 @@ Playwright is configured via MCP server in `.vscode/mcp.json` for live browser t
 
 ### Environment Variables
 - `REACT_APP_GIT_SHA`: Injected at build time, displayed in footer (format: first 7 chars)
+- `REACT_APP_GIT_DATE`: Injected at build time, displays commit timestamp in footer
 
 ## Common Pitfalls
 
