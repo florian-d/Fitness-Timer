@@ -36,6 +36,7 @@ React 18 + TypeScript PWA for High-Intensity Interval Training workouts. Mobile-
 - Always use `jest.useFakeTimers()` for timer tests
 - Wrap state changes in `act()` - see `clickWithAct`, `advanceTime`, `runPendingTimers` helpers in `Timer.test.tsx`
 - Mock audio elements to avoid browser errors during tests
+- Always create tests for new features
 
 ### TypeScript Conventions
 - Strict mode enabled in `tsconfig.json`
@@ -53,6 +54,8 @@ React 18 + TypeScript PWA for High-Intensity Interval Training workouts. Mobile-
 - Matomo analytics via `src/utils/analytics.ts` - `trackEvent()` function
 - Only tracks workout lifecycle: Started, Completed
 - Checks for `window._paq` existence before pushing events
+- When new features added, consider if they warrant new analytics events (e.g., settings changes, state changes, errors, ...)
+
 
 ## Build & Test Commands
 
@@ -91,6 +94,14 @@ No explicit lint script - ESLint configured via `eslintConfig` in `package.json`
 - Interval-based timer using `setInterval(dispatch, 1000)` - not high precision
 - Phase transitions happen when `timeRemaining` reaches 0, then immediate next phase
 - Settings changes synced via `SYNC_SETTINGS` action only when timer in ready/complete state
+
+## Documentation
+
+### README.md
+- Always update `README.md` when adding or changing features
+- The README should explain the basic functionality of the app and how to use it
+- Keep feature descriptions concise and user-focused
+- Document any new user-facing capabilities
 
 ## Adding New Features
 
