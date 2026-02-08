@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useRef, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
 import { WorkoutSettings } from '../App';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { trackEvent } from '../utils/analytics';
@@ -27,6 +28,8 @@ type TimerEvent =
   | { type: 'SYNC_SETTINGS' };
 
 const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
+  const { t } = useTranslation();
+
   const reducer = (currentState: TimerState, event: TimerEvent): TimerState => {
     switch (event.type) {
       case 'START':
@@ -246,15 +249,15 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   const getPhaseText = (): string => {
     switch (state.phase) {
       case 'ready':
-        return 'READY?';
+        return t('timer.ready');
       case 'prepare':
-        return 'GET READY!';
+        return t('timer.prepare');
       case 'exercise':
-        return `EXERCISE - Round ${state.currentRound}/${settings.rounds}`;
+        return t('timer.exercise', { current: state.currentRound, total: settings.rounds });
       case 'rest':
-        return `REST - Round ${state.currentRound}/${settings.rounds}`;
+        return t('timer.rest', { current: state.currentRound, total: settings.rounds });
       case 'complete':
-        return 'COMPLETE!';
+        return t('timer.complete');
       default:
         return '';
     }
@@ -327,7 +330,7 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
       <div className="timer-content">
         <div className="phase-text">{getPhaseText()}</div>
         <div className="timer-display">
-          {state.phase === 'ready' ? 'TAP TO START' : formatTime(state.timeRemaining)}
+          {state.phase === 'ready' ? t('timer.tapToStart') : formatTime(state.timeRemaining)}
         </div>
         <div className="controls">
           <button 

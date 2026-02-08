@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Timer from './components/Timer';
 import Settings from './components/Settings';
 import { loadSettings, saveSettings } from './utils/localStorage';
@@ -12,6 +13,7 @@ export interface WorkoutSettings {
 }
 
 function App() {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState<WorkoutSettings>(() => {
     // Load settings from localStorage on initial render
     return loadSettings();
@@ -62,7 +64,7 @@ function App() {
         </>
       )}
       <footer className="app-footer">
-        Commit: {commitLabel}
+        {t('app.commit', { label: commitLabel })}
       </footer>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { WorkoutSettings } from '../App';
 import './Settings.css';
 
@@ -9,10 +10,15 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
+  const { t, i18n } = useTranslation();
   const [rounds, setRounds] = useState(settings.rounds);
   const [exerciseTime, setExerciseTime] = useState(settings.exerciseTime);
   const [restTime, setRestTime] = useState(settings.restTime);
   const [prepTime, setPrepTime] = useState(settings.prepTime);
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    i18n.changeLanguage(e.target.value);
+  };
 
   const handleSave = () => {
     onSave({
@@ -26,7 +32,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
   return (
     <div className="settings-container">
       <div className="settings-header">
-        <h1>Settings</h1>
+        <h1>{t('settings.title')}</h1>
         <button className="close-button" onClick={onClose} aria-label="Close settings">
           ✕
         </button>
@@ -34,7 +40,22 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
       
       <div className="settings-content">
         <div className="setting-item">
-          <label htmlFor="rounds">Number of Rounds</label>
+          <label htmlFor="language">{t('settings.language')}</label>
+          <div className="input-group">
+            <select
+              id="language"
+              value={i18n.language.substring(0, 2)}
+              onChange={handleLanguageChange}
+              className="language-select"
+            >
+              <option value="en">{t('languages.en')}</option>
+              <option value="de">{t('languages.de')}</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="setting-item">
+          <label htmlFor="rounds">{t('settings.rounds')}</label>
           <div className="input-group">
             <button 
               onClick={() => setRounds(Math.max(1, rounds - 1))}
@@ -60,7 +81,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
         </div>
 
         <div className="setting-item">
-          <label htmlFor="exercise-time">Exercise Time (seconds)</label>
+          <label htmlFor="exercise-time">{t('settings.exerciseTime')}</label>
           <div className="input-group">
             <button 
               onClick={() => setExerciseTime(Math.max(5, exerciseTime - 5))}
@@ -87,7 +108,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
         </div>
 
         <div className="setting-item">
-          <label htmlFor="rest-time">Rest Time (seconds)</label>
+          <label htmlFor="rest-time">{t('settings.restTime')}</label>
           <div className="input-group">
             <button 
               onClick={() => setRestTime(Math.max(5, restTime - 5))}
@@ -114,7 +135,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
         </div>
 
         <div className="setting-item">
-          <label htmlFor="prep-time">Preparation Time (seconds)</label>
+          <label htmlFor="prep-time">{t('settings.prepTime')}</label>
           <div className="input-group">
             <button 
               onClick={() => setPrepTime(Math.max(3, prepTime - 1))}
@@ -141,12 +162,12 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
         </div>
 
         <div className="settings-summary">
-          <h3>Workout Summary</h3>
-          <p>Total Time: {Math.ceil((exerciseTime * rounds + restTime * (rounds - 1)) / 60)} minutes</p>
+          <h3>{t('settings.summary')}</h3>
+          <p>{t('settings.totalTime', { minutes: Math.ceil((exerciseTime * rounds + restTime * (rounds - 1)) / 60) })}</p>
         </div>
 
         <button className="save-button" onClick={handleSave}>
-          Save & Start
+          {t('settings.save')}
         </button>
       </div>
     </div>

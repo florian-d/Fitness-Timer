@@ -1,0 +1,28 @@
+{
+  "timer": {
+    "ready": "READY?",
+    "prepare": "GET READY!",
+    "exercise": "EXERCISE - Round {{current}}/{{total}}",
+    "rest": "REST - Round {{current}}/{{total}}",
+    "complete": "COMPLETE!",
+    "tapToStart": "TAP TO START"
+  },
+  "settings": {
+    "title": "Settings",
+    "rounds": "Number of Rounds",
+    "exerciseTime": "Exercise Time (seconds)",
+    "restTime": "Rest Time (seconds)",
+    "prepTime": "Preparation Time (seconds)",
+    "summary": "Workout Summary",
+    "totalTime": "Total Time: {{minutes}} minutes",
+    "save": "Save & Start",
+    "language": "Language"
+  },
+  "app": {
+    "commit": "Commit: {{label}}"
+  },
+  "languages": {
+    "en": "English",
+    "de": "Deutsch"
+  }
+}

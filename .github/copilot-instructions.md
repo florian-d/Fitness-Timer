@@ -56,6 +56,29 @@ React 18 + TypeScript PWA for High-Intensity Interval Training workouts. Mobile-
 - Checks for `window._paq` existence before pushing events
 - When new features added, consider if they warrant new analytics events (e.g., settings changes, state changes, errors, ...)
 
+### Internationalization (i18n)
+- Uses `react-i18next` for multilanguage support
+- Translation files located in `src/locales/` (e.g., `en.json`, `de.json`)
+- Browser language auto-detected via `i18next-browser-languagedetector`
+- User language preference persisted in localStorage
+- i18n configuration in `src/i18n.ts`
+
+#### Adding New UI Text
+1. Add translation key to ALL language files in `src/locales/`
+2. Use `useTranslation` hook in component:
+   ```tsx
+   import { useTranslation } from 'react-i18next';
+   const { t } = useTranslation();
+   return <span>{t('section.keyName')}</span>;
+   ```
+3. For dynamic values use interpolation: `t('timer.exercise', { current: 1, total: 5 })`
+4. NEVER hardcode user-facing strings directly in JSX
+
+#### Translation File Structure
+- Keys organized by component/feature: `timer.*`, `settings.*`, `app.*`, `languages.*`
+- Fallback language: English (`en`)
+- Currently supported: English (en), German (de)
+
 
 ## Build & Test Commands
 
@@ -110,9 +133,19 @@ No explicit lint script - ESLint configured via `eslintConfig` in `package.json`
 2. Update reducer `TICK` case for transition logic
 3. Add color in `getPhaseColor()` and label in `getPhaseText()`
 4. Consider audio cues in phase change `useEffect`
+5. Add translation keys to all language files in `src/locales/`
 
 ### New Settings Field
 1. Add to `WorkoutSettings` interface in `App.tsx`
 2. Add state + handlers in `Settings.tsx` (follow rounds/exerciseTime pattern)
 3. Update `SYNC_SETTINGS` logic in Timer reducer if needed
 4. Update total time calculation in settings summary
+5. Add translation keys to all language files in `src/locales/`
+
+### Adding a New Language
+1. Create new translation file `src/locales/{lang}.json` (copy from `en.json`)
+2. Translate all strings in the new file
+3. Import and register in `src/i18n.ts` resources
+4. Add language option to Settings.tsx language dropdown
+5. Add language name to `languages.*` section in all translation files
+6. Run `npm test` to verify all translation keys match

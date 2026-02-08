@@ -44,8 +44,8 @@ describe('Timer Component', () => {
 
   test('renders in ready state', () => {
     render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
-    expect(screen.getByText(/ready\?/i)).toBeInTheDocument();
-    expect(screen.getByText(/tap to start/i)).toBeInTheDocument();
+    expect(screen.getByText('timer.ready')).toBeInTheDocument();
+    expect(screen.getByText('timer.tapToStart')).toBeInTheDocument();
   });
 
   test('starts timer when play button is clicked', async () => {
@@ -54,7 +54,7 @@ describe('Timer Component', () => {
     fireEvent.click(startButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/get ready!/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.prepare')).toBeInTheDocument();
     });
   });
 
@@ -82,7 +82,7 @@ describe('Timer Component', () => {
     advanceTime(2000);
     
     await waitFor(() => {
-      expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       expect(screen.getByText(/0:03/)).toBeInTheDocument();
     });
 
@@ -102,14 +102,14 @@ describe('Timer Component', () => {
     advanceTime(2000);
 
     await waitFor(() => {
-      expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.exercise')).toBeInTheDocument();
     });
 
     // Advance through exercise time
     advanceTime(3000);
 
     await waitFor(() => {
-      expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.rest')).toBeInTheDocument();
     });
   });
 
@@ -122,21 +122,21 @@ describe('Timer Component', () => {
     advanceTime(2000);
 
     await waitFor(() => {
-      expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.exercise')).toBeInTheDocument();
     });
 
     // Advance through exercise time
     advanceTime(3000);
 
     await waitFor(() => {
-      expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.rest')).toBeInTheDocument();
     });
 
     // Advance through rest time
     advanceTime(2000);
 
     await waitFor(() => {
-      expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.exercise')).toBeInTheDocument();
     });
   });
 
@@ -151,19 +151,19 @@ describe('Timer Component', () => {
     // Round 1 exercise + rest
     advanceTime(3000);
     await waitFor(() => {
-      expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.rest')).toBeInTheDocument();
     });
 
     advanceTime(2000);
     await waitFor(() => {
-      expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.exercise')).toBeInTheDocument();
     });
 
     // Round 2 exercise (final round, no rest after)
     advanceTime(3000);
 
     await waitFor(() => {
-      expect(screen.getByText(/complete!/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.complete')).toBeInTheDocument();
     });
   });
 
@@ -205,7 +205,7 @@ describe('Timer Component', () => {
     advanceTime(2000);
 
     await waitFor(() => {
-      expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.exercise')).toBeInTheDocument();
     });
 
     advanceTime(1000);
@@ -214,8 +214,8 @@ describe('Timer Component', () => {
     fireEvent.click(resetButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/ready\?/i)).toBeInTheDocument();
-      expect(screen.getByText(/tap to start/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.ready')).toBeInTheDocument();
+      expect(screen.getByText('timer.tapToStart')).toBeInTheDocument();
     });
   });
 
@@ -236,7 +236,7 @@ describe('Timer Component', () => {
       fireEvent.click(startButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/get ready!/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.prepare')).toBeInTheDocument();
         expect(screen.getByText(/0:02/)).toBeInTheDocument();
       });
     });
@@ -247,14 +247,14 @@ describe('Timer Component', () => {
       fireEvent.click(startButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/get ready!/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.prepare')).toBeInTheDocument();
       });
 
       // Advance through prepare time
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
     });
 
@@ -280,7 +280,7 @@ describe('Timer Component', () => {
       fireEvent.click(startButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/get ready!/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.prepare')).toBeInTheDocument();
       });
 
       const pauseButton = screen.getByLabelText(/pause/i);
@@ -331,7 +331,7 @@ describe('Timer Component', () => {
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Verify bell sound was played (double bell = bell_twice.mp3)
@@ -370,7 +370,7 @@ describe('Timer Component', () => {
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Clear previous calls (from prepare to exercise transition)
@@ -380,7 +380,7 @@ describe('Timer Component', () => {
       advanceTime(3000);
 
       await waitFor(() => {
-        expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.rest')).toBeInTheDocument();
       });
 
       // Verify bell sound was played once (exercise to rest transition)
@@ -399,7 +399,7 @@ describe('Timer Component', () => {
       advanceTime(3000);
 
       await waitFor(() => {
-        expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.rest')).toBeInTheDocument();
       });
 
       // Clear previous calls
@@ -409,7 +409,7 @@ describe('Timer Component', () => {
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Verify bell sound was played once (rest to exercise transition)
@@ -425,20 +425,20 @@ describe('Timer Component', () => {
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Complete all rounds
       advanceTime(3000); // Round 1 exercise
       
       await waitFor(() => {
-        expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.rest')).toBeInTheDocument();
       });
 
       advanceTime(2000); // Round 1 rest
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 2\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Clear previous calls
@@ -447,7 +447,7 @@ describe('Timer Component', () => {
       advanceTime(3000); // Round 2 exercise (final)
 
       await waitFor(() => {
-        expect(screen.getByText(/complete!/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.complete')).toBeInTheDocument();
       });
 
       // Verify bell sound was played (Audio already created, so just check play)
@@ -473,11 +473,11 @@ describe('Timer Component', () => {
       advanceTime(3000);
 
       await waitFor(() => {
-        expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.rest')).toBeInTheDocument();
       });
 
       // App should continue working despite audio error
-      expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+      expect(screen.getByText('timer.rest')).toBeInTheDocument();
       // With new implementation, errors in Audio constructor are caught on initialization
       expect(consoleWarnSpy).toHaveBeenCalledWith('Audio initialization failed:', expect.any(Error));
 
@@ -517,7 +517,7 @@ describe('Timer Component', () => {
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Wait for wake lock to be requested
@@ -535,14 +535,14 @@ describe('Timer Component', () => {
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Advance through exercise time to rest
       advanceTime(3000);
 
       await waitFor(() => {
-        expect(screen.getByText(/rest - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.rest')).toBeInTheDocument();
       });
 
       // Wake lock should be released during rest
@@ -560,7 +560,7 @@ describe('Timer Component', () => {
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Wait for wake lock to be requested
@@ -587,7 +587,7 @@ describe('Timer Component', () => {
       advanceTime(2000);
 
       await waitFor(() => {
-        expect(screen.getByText(/exercise - round 1\/2/i)).toBeInTheDocument();
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
       // Pause the timer
