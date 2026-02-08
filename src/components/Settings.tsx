@@ -16,8 +16,17 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
   const [restTime, setRestTime] = useState(settings.restTime);
   const [prepTime, setPrepTime] = useState(settings.prepTime);
 
+  // Get current language, defaulting to 'en' if not supported
+  const supportedLanguages = ['en', 'de'];
+  const currentLanguage = supportedLanguages.includes(i18n.resolvedLanguage || '')
+    ? i18n.resolvedLanguage
+    : 'en';
+
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    i18n.changeLanguage(e.target.value);
+    i18n.changeLanguage(e.target.value).catch((error: unknown) => {
+      // eslint-disable-next-line no-console
+      console.error('Failed to change language:', error);
+    });
   };
 
   const handleSave = () => {
@@ -44,7 +53,7 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
           <div className="input-group">
             <select
               id="language"
-              value={i18n.language.substring(0, 2)}
+              value={currentLanguage}
               onChange={handleLanguageChange}
               className="language-select"
             >

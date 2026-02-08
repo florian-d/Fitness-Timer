@@ -33,7 +33,7 @@ A Progressive Web App (PWA) for High-Intensity Interval Training (HIIT) workouts
 - **Mobile-Optimized**: Responsive design focused on iPhone and mobile devices
 - **PWA Support**: Install on your home screen for app-like experience
 - **Offline Ready**: Works without internet connection once installed
-- **Multilanguage Support**: Available in English and German, with automatic browser language detection
+- **Multilingual Support**: Available in English and German, with automatic browser language detection
 
 ## Screenshots
 
