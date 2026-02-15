@@ -28,9 +28,10 @@ A Progressive Web App (PWA) for High-Intensity Interval Training (HIIT) workouts
 - **Color-Coded Phases**:
   - 🔴 Red background during exercise periods
   - 🟢 Green background during rest periods
+  - 🟡 Yellow background during preparation phase
   - ⚪ Gray background in ready state
 - **Auto-Progression**: Automatically transitions between exercise and rest phases
-- **Workout Control**: Pause, resume, and reset timer functionality
+- **Workout Control**: Pause, resume, and reset timer functionality with professional SVG icons
 
 ### Preset Management (New!)
 - **Multiple Workout Presets**: Create, save, and manage multiple named workout configurations
@@ -52,17 +53,26 @@ A Progressive Web App (PWA) for High-Intensity Interval Training (HIIT) workouts
 
 ## Screenshots
 
-### Main Screen with Preset Selector
-![Main Screen with Presets](main-screen-presets-en.png)
+### Main Screen with Preset Selector & SVG Icons
+![Main Screen with Presets](main-screen-svg-icons.png)
 - Preset dropdown to quickly switch between configured workouts
 - Only available when timer is in ready state
+- Professional SVG icons for all buttons
+
+### Timer in Action (Preparation Phase)
+![Timer Running - SVG Icons](timer-running-svg-icons.png)
+- Yellow background indicates preparation phase (countdown before exercise starts)
+- Pause button (two bars icon) to pause the timer
+- Reset button (refresh arrow icon) to return to ready state
+- All controls use clean SVG icons for better visual integration
 
 ### Workout Presets Management
-![Settings - Presets](settings-presets-en.png)
+![Settings - Presets with SVG Icons](settings-svg-icons.png)
 - Create new presets with the "+ Add New Preset" button
-- Rename existing presets with the ✏ button
-- Delete presets with the 🗑 button (at least one preset must remain)
+- Rename existing presets with the pencil edit icon
+- Delete presets with the trash icon (at least one preset must remain)
 - Active preset is marked with a bullet point (●)
+- Close button uses an X icon (top right)
 
 ### Preset Editor
 ![Preset Editor](preset-editor-en.png)
@@ -151,14 +161,16 @@ The optimized production build will be in the `build/` folder.
 
 ### Running a Workout
 1. **Select Preset**: Choose your desired preset from the dropdown on the main screen
-2. **Begin Workout**: Tap the play button (▶) to start the timer
+2. **Begin Workout**: Tap the play button (▶ icon) to start the timer
 3. **Control Timer**:
-   - Pause/Resume: Tap the pause (⏸) or play (▶) button
-   - Reset: Tap the reset (⟲) button to return to ready state
+   - Pause/Resume: Tap the pause button (‖ icon) to pause, or play button (▶ icon) to resume
+   - Reset: Tap the reset button (⟳ refresh icon) to return to ready state
 4. **Phase Indicators**: The background color changes with each phase:
    - Gray = Ready
+   - Yellow = Preparation (countdown before exercise begins)
    - Red = Exercise
    - Green = Rest
+   - Blue = Complete
 
 ## Testing
 

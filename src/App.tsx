@@ -10,6 +10,7 @@ import {
   deletePreset,
   setActivePreset,
 } from './utils/localStorage';
+import { MenuIcon } from './utils/icons';
 import './App.css';
 
 export interface WorkoutSettings {
@@ -151,7 +152,7 @@ function App() {
             disabled={isRunning}
             aria-label="Open settings"
           >
-            ☰
+            <MenuIcon />
           </button>
           <Timer
             settings={settings}

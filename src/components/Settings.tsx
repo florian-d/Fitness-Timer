@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WorkoutSettings, PresetStore } from '../App';
+import { BackIcon, CloseIcon, EditIcon, TrashIcon, CheckIcon } from '../utils/icons';
 import './Settings.css';
 
 interface SettingsProps {
@@ -140,7 +141,7 @@ const Settings: React.FC<SettingsProps> = ({
       <div className="settings-container">
         <div className="settings-header">
           <button className="back-button" onClick={handleBackFromSubpage} aria-label="Back to settings">
-            ←
+            <BackIcon />
           </button>
           <h1 className="subpage-title">{editingPreset.name}</h1>
           <div className="header-spacer"></div>
@@ -273,7 +274,7 @@ const Settings: React.FC<SettingsProps> = ({
       <div className="settings-header">
         <h1>{t('settings.title')}</h1>
         <button className="close-button" onClick={onClose} aria-label="Close settings">
-          ✕
+          <CloseIcon />
         </button>
       </div>
 
@@ -302,10 +303,12 @@ const Settings: React.FC<SettingsProps> = ({
                       }}
                       autoFocus
                     />
-                    <button onClick={() => handleRenamePreset(preset.id)}>
-                      ✓
+                    <button onClick={() => handleRenamePreset(preset.id)} aria-label="Confirm">
+                      <CheckIcon />
                     </button>
-                    <button onClick={() => setEditingPresetId(null)}>✕</button>
+                    <button onClick={() => setEditingPresetId(null)} aria-label="Cancel">
+                      <CloseIcon />
+                    </button>
                   </div>
                 ) : (
                   <>
@@ -324,7 +327,7 @@ const Settings: React.FC<SettingsProps> = ({
                       }}
                       aria-label={t('presets.rename') as string}
                     >
-                      ✏
+                      <EditIcon />
                     </button>
                     <button
                       className="preset-action-button"
@@ -332,7 +335,7 @@ const Settings: React.FC<SettingsProps> = ({
                       disabled={presetStore.presets.length <= 1}
                       aria-label={t('presets.delete') as string}
                     >
-                      🗑
+                      <TrashIcon />
                     </button>
                   </>
                 )}

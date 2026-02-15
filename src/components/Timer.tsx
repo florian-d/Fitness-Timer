@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { WorkoutSettings, WorkoutPreset } from '../App';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { trackEvent } from '../utils/analytics';
+import { PlayIcon, PauseIcon, ResetIcon } from '../utils/icons';
 import './Timer.css';
 
 interface TimerProps {
@@ -369,7 +370,7 @@ const Timer: React.FC<TimerProps> = ({
             onClick={handleStartPause}
             aria-label={state.phase === 'ready' ? 'Start' : state.isRunning ? 'Pause' : 'Resume'}
           >
-            {state.phase === 'ready' || state.phase === 'complete' ? '▶' : state.isRunning ? '⏸' : '▶'}
+            {state.phase === 'ready' || state.phase === 'complete' ? <PlayIcon /> : state.isRunning ? <PauseIcon /> : <PlayIcon />}
           </button>
           {state.phase !== 'ready' && state.phase !== 'complete' && (
             <button
@@ -377,7 +378,7 @@ const Timer: React.FC<TimerProps> = ({
               onClick={handleReset}
               aria-label="Reset"
             >
-              ⟲
+              <ResetIcon />
             </button>
           )}
         </div>
