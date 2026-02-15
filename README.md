@@ -23,13 +23,29 @@ A Progressive Web App (PWA) for High-Intensity Interval Training (HIIT) workouts
 
 ## Features
 
+### Core Timer Features
 - **Visual Timer Display**: Large, high-contrast timer display for easy visibility during workouts
-- **Color-Coded Phases**: 
+- **Color-Coded Phases**:
   - 🔴 Red background during exercise periods
   - 🟢 Green background during rest periods
+  - 🟡 Yellow background during preparation phase
   - ⚪ Gray background in ready state
-- **Customizable Workouts**: Configure number of rounds, exercise time, and rest time
 - **Auto-Progression**: Automatically transitions between exercise and rest phases
+- **Workout Control**: Pause, resume, and reset timer functionality with professional SVG icons
+
+### Preset Management (New!)
+- **Multiple Workout Presets**: Create, save, and manage multiple named workout configurations
+- **Quick Preset Switching**: Switch between presets directly from the main screen (only in ready state)
+- **Preset Customization**: Each preset stores its own:
+  - Number of rounds (1-50)
+  - Exercise time (5-600 seconds)
+  - Rest time (5-300 seconds)
+  - Preparation time (0-300 seconds)
+- **Preset Management UI**: Rename, delete, and create presets in the Settings screen
+- **Default Preset**: A "Default" preset is created on first launch with standard values
+
+### Additional Features
+- **Workout Summary**: See total workout duration at a glance
 - **Mobile-Optimized**: Responsive design focused on iPhone and mobile devices
 - **PWA Support**: Install on your home screen for app-like experience
 - **Offline Ready**: Works without internet connection once installed
@@ -37,17 +53,45 @@ A Progressive Web App (PWA) for High-Intensity Interval Training (HIIT) workouts
 
 ## Screenshots
 
-### Ready State
+### Main Screen with Preset Selector & SVG Icons
+![Main Screen with Presets](main-screen-svg-icons.png)
+- Preset dropdown to quickly switch between configured workouts
+- Only available when timer is in ready state
+- Professional SVG icons for all buttons
+
+### Timer in Action (Preparation Phase)
+![Timer Running - SVG Icons](timer-running-svg-icons.png)
+- Yellow background indicates preparation phase (countdown before exercise starts)
+- Pause button (two bars icon) to pause the timer
+- Reset button (refresh arrow icon) to return to ready state
+- All controls use clean SVG icons for better visual integration
+
+### Workout Presets Management
+![Settings - Presets with SVG Icons](settings-svg-icons.png)
+- Create new presets with the "+ Add New Preset" button
+- Rename existing presets with the pencil edit icon
+- Delete presets with the trash icon (at least one preset must remain)
+- Active preset is marked with a bullet point (●)
+- Close button uses an X icon (top right)
+
+### Preset Editor
+![Preset Editor](preset-editor-en.png)
+- Configure all parameters for a selected preset
+- Adjust number of rounds, exercise time, rest time, and preparation time
+- View total workout duration in the summary section
+- Changes are automatically saved
+
+### Original Timer Screens
+For reference, the original timer display screens:
+
+**Ready State** (Gray background)
 ![Ready State](https://github.com/user-attachments/assets/34a058ea-f1e1-455b-9703-62bc88bb6bc5)
 
-### Exercise Phase (Red)
+**Exercise Phase** (Red background)
 ![Exercise State](https://github.com/user-attachments/assets/4dc74cbd-ebb7-4f54-9984-b4c28de0546e)
 
-### Rest Phase (Green)
+**Rest Phase** (Green background)
 ![Rest State](https://github.com/user-attachments/assets/6bd7f5bd-f340-4572-b3b9-b8f1d87f4dd6)
-
-### Settings Screen
-![Settings](https://github.com/user-attachments/assets/45a0b82f-5a24-410b-82b8-e18270df0d93)
 
 ## Getting Started
 
@@ -86,17 +130,47 @@ The optimized production build will be in the `build/` folder.
 
 ## Usage
 
+### Switching Between Presets
+1. On the main screen, use the **preset dropdown** to select your desired workout configuration
+2. Only available when the timer is in **ready state** (not running)
+3. Each preset has its own saved settings
+
+### Creating a New Preset
 1. **Open Settings**: Tap the menu button (☰) in the top right corner
-2. **Configure Workout**:
+2. **Go to Presets**: In the "Workout-Presets" section, tap **"+ Neues Preset hinzufügen"**
+3. **Enter a Name**: Provide a unique name for your preset
+4. **Configure Settings**: The preset will be created with default values
+5. **Edit if Needed**: Tap on the preset to customize the workout parameters
+
+### Configuring a Preset
+1. **Open Settings**: Tap the menu button (☰) in the top right corner
+2. **Select a Preset**: Tap on the preset name you want to configure
+3. **Adjust Parameters**:
    - Set the number of rounds (1-50)
    - Set exercise time in seconds (5-600)
    - Set rest time in seconds (5-300)
-   - View total workout time
-3. **Save & Start**: Tap the "Save & Start" button
-4. **Begin Workout**: Tap the play button (▶) to start
-5. **Control Timer**:
-   - Pause/Resume: Tap the pause (⏸) or play (▶) button
-   - Reset: Tap the reset (⟲) button to return to ready state
+   - Set preparation time in seconds (0-300)
+   - View total workout duration in the summary
+4. **Save**: Tap the "Speichern" button to save changes
+5. **Back**: Tap the back arrow (←) to return to the preset list
+
+### Managing Presets
+- **Rename**: Tap the pencil (✏) icon next to a preset
+- **Delete**: Tap the trash can (🗑) icon (at least one preset must remain)
+- **Select Active**: Tap on a preset name to make it the active preset
+
+### Running a Workout
+1. **Select Preset**: Choose your desired preset from the dropdown on the main screen
+2. **Begin Workout**: Tap the play button (▶ icon) to start the timer
+3. **Control Timer**:
+   - Pause/Resume: Tap the pause button (‖ icon) to pause, or play button (▶ icon) to resume
+   - Reset: Tap the reset button (⟳ refresh icon) to return to ready state
+4. **Phase Indicators**: The background color changes with each phase:
+   - Gray = Ready
+   - Yellow = Preparation (countdown before exercise begins)
+   - Red = Exercise
+   - Green = Rest
+   - Blue = Complete
 
 ## Testing
 

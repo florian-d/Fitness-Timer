@@ -5,7 +5,8 @@
     "exercise": "TRAINING - Runde {{current}}/{{total}}",
     "rest": "PAUSE - Runde {{current}}/{{total}}",
     "complete": "GESCHAFFT!",
-    "tapToStart": "TIPPEN ZUM STARTEN"
+    "tapToStart": "TIPPEN ZUM STARTEN",
+    "preset": "Preset wählen"
   },
   "settings": {
     "title": "Einstellungen",
@@ -15,8 +16,23 @@
     "prepTime": "Vorbereitungszeit (Sekunden)",
     "summary": "Workout-Zusammenfassung",
     "totalTime": "Gesamtzeit: {{minutes}} Minuten",
-    "save": "Speichern & Starten",
+    "save": "Speichern",
     "language": "Sprache"
+  },
+  "presets": {
+    "title": "Workout-Presets",
+    "addNew": "Neues Preset hinzufügen",
+    "create": "Erstellen",
+    "cancel": "Abbrechen",
+    "rename": "Preset umbenennen",
+    "delete": "Preset löschen",
+    "newPresetPlaceholder": "Preset-Namen eingeben...",
+    "confirmDelete": "Preset '{{name}}' löschen? Dies kann nicht rückgängig gemacht werden.",
+    "error": {
+      "nameTaken": "Ein Preset mit diesem Namen existiert bereits",
+      "cannotDeleteLast": "Das letzte Preset kann nicht gelöscht werden",
+      "tooMany": "Maximal 20 Presets erlaubt"
+    }
   },
   "app": {
     "commit": "Commit: {{label}}"

@@ -46,6 +46,42 @@
   background: rgba(255, 255, 255, 0.4);
 }
 
+.back-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  font-size: 28px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.back-button:active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.subpage-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.header-spacer {
+  width: 50px;
+}
+
 .settings-content {
   flex: 1;
   padding: 30px 20px;
@@ -210,5 +246,256 @@
 @supports (-webkit-touch-callout: none) {
   .settings-container {
     height: -webkit-fill-available;
+  }
+}
+
+/* Preset Management Section */
+.preset-section {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.preset-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.preset-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.preset-item.active {
+  border-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.preset-select-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.preset-select-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.preset-name {
+  font-weight: 500;
+}
+
+.active-indicator {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+}
+
+.preset-action-button {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.preset-action-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.preset-action-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.preset-edit {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  align-items: center;
+}
+
+.preset-edit input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.preset-edit input:focus {
+  outline: none;
+  border-color: white;
+}
+
+.preset-edit button {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.preset-edit button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.new-preset-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.new-preset-form input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 16px;
+}
+
+.new-preset-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.new-preset-form input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.new-preset-form button {
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.new-preset-form button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.add-preset-button {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.add-preset-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.preset-error {
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-radius: 8px;
+  color: #FCA5A5;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.settings-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0;
+}
+
+/* Mobile optimizations for presets */
+@media (max-width: 480px) {
+  .preset-section h3 {
+    font-size: 18px;
+  }
+
+  .preset-select-button {
+    font-size: 15px;
+    padding: 9px 10px;
+  }
+
+  .preset-name {
+    font-size: 15px;
+  }
+
+  .preset-action-button {
+    padding: 7px 10px;
+    font-size: 15px;
+  }
+
+  .preset-edit input {
+    font-size: 15px;
+    padding: 9px 10px;
+  }
+
+  .new-preset-form input {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .new-preset-form button {
+    font-size: 15px;
+    padding: 10px 16px;
+  }
+
+  .add-preset-button {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .preset-error {
+    font-size: 13px;
+    padding: 10px;
   }
 }
