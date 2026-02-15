@@ -16,7 +16,7 @@
     "prepTime": "Vorbereitungszeit (Sekunden)",
     "summary": "Workout-Zusammenfassung",
     "totalTime": "Gesamtzeit: {{minutes}} Minuten",
-    "save": "Speichern & Starten",
+    "save": "Speichern",
     "language": "Sprache"
   },
   "presets": {

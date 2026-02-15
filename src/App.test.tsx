@@ -6,20 +6,46 @@ import * as localStorageUtils from './utils/localStorage';
 // Mock the localStorage utilities
 jest.mock('./utils/localStorage');
 
-const mockLoadSettings = localStorageUtils.loadSettings as jest.MockedFunction<typeof localStorageUtils.loadSettings>;
-const mockSaveSettings = localStorageUtils.saveSettings as jest.MockedFunction<typeof localStorageUtils.saveSettings>;
+const mockLoadPresetStore = localStorageUtils.loadPresetStore as jest.MockedFunction<typeof localStorageUtils.loadPresetStore>;
+const mockSavePresetStore = localStorageUtils.savePresetStore as jest.MockedFunction<typeof localStorageUtils.savePresetStore>;
+const mockUpdatePreset = localStorageUtils.updatePreset as jest.MockedFunction<typeof localStorageUtils.updatePreset>;
+const mockSetActivePreset = localStorageUtils.setActivePreset as jest.MockedFunction<typeof localStorageUtils.setActivePreset>;
+
+const defaultPresetStore = {
+  activePresetId: 'preset-1',
+  presets: [
+    {
+      id: 'preset-1',
+      name: 'Default',
+      settings: {
+        rounds: 8,
+        exerciseTime: 30,
+        restTime: 10,
+        prepTime: 10,
+      },
+      createdAt: Date.now(),
+    },
+  ],
+  version: 1,
+};
 
 describe('App', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Default mock implementation
-    mockLoadSettings.mockReturnValue({
-      rounds: 8,
-      exerciseTime: 30,
-      restTime: 10,
-      prepTime: 10,
+    mockLoadPresetStore.mockReturnValue(defaultPresetStore);
+    mockSavePresetStore.mockReturnValue(true);
+    // setActivePreset returns the same store (switching to already-active preset)
+    mockSetActivePreset.mockReturnValue(defaultPresetStore);
+    // updatePreset returns an updated store by default
+    mockUpdatePreset.mockImplementation((store, _presetId, updates) => {
+      const updatedPresets = store.presets.map(p => {
+        if (p.id === store.activePresetId && updates.settings) {
+          return { ...p, settings: updates.settings };
+        }
+        return p;
+      });
+      return { ...store, presets: updatedPresets };
     });
-    mockSaveSettings.mockReturnValue(true);
   });
 
   test('renders menu button', () => {
@@ -38,7 +64,7 @@ describe('App', () => {
     render(<App />);
     const menuButton = screen.getByLabelText(/open settings/i);
     fireEvent.click(menuButton);
-    
+
     const settingsTitle = screen.getByText('settings.title');
     expect(settingsTitle).toBeInTheDocument();
   });
@@ -47,10 +73,10 @@ describe('App', () => {
     render(<App />);
     const menuButton = screen.getByLabelText(/open settings/i);
     fireEvent.click(menuButton);
-    
+
     const closeButton = screen.getByLabelText(/close settings/i);
     fireEvent.click(closeButton);
-    
+
     const readyText = screen.getByText('timer.tapToStart');
     expect(readyText).toBeInTheDocument();
   });
@@ -59,70 +85,54 @@ describe('App', () => {
     render(<App />);
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
-    
+
     await waitFor(() => {
       const menuButton = screen.getByLabelText(/open settings/i);
       expect(menuButton).toBeDisabled();
     });
   });
 
-  test('loads settings from localStorage on mount', () => {
-    const customSettings = {
-      rounds: 12,
-      exerciseTime: 45,
-      restTime: 15,
-      prepTime: 12,
-    };
-    mockLoadSettings.mockReturnValue(customSettings);
-
+  test('loads preset store from localStorage on mount', () => {
     render(<App />);
-
-    expect(mockLoadSettings).toHaveBeenCalled();
+    expect(mockLoadPresetStore).toHaveBeenCalled();
   });
 
-  test('saves settings to localStorage when settings are updated', async () => {
+  test('shows preset list on settings main view', () => {
     render(<App />);
-    
+    const menuButton = screen.getByLabelText(/open settings/i);
+    fireEvent.click(menuButton);
+
+    expect(screen.getByText('Default')).toBeInTheDocument();
+    expect(screen.getByText('presets.title')).toBeInTheDocument();
+  });
+
+  test('opens preset sub-page and saves settings', async () => {
+    render(<App />);
+
     // Open settings
     const menuButton = screen.getByLabelText(/open settings/i);
     fireEvent.click(menuButton);
-    
+
+    // Click preset to open sub-page
+    fireEvent.click(screen.getByText('Default'));
+
+    // Verify timer values are shown
+    expect(screen.getByDisplayValue('8')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('30')).toBeInTheDocument();
+
     // Modify settings (increase rounds)
     const increaseButtons = screen.getAllByLabelText(/increase/i);
     fireEvent.click(increaseButtons[0]); // Increase rounds
-    
+
     // Save settings
     const saveButton = screen.getByText('settings.save');
     fireEvent.click(saveButton);
 
+    // Should return to main settings view
+    expect(screen.getByText('presets.title')).toBeInTheDocument();
+
     await waitFor(() => {
-      expect(mockSaveSettings).toHaveBeenCalledWith({
-        rounds: 9,
-        exerciseTime: 30,
-        restTime: 10,
-        prepTime: 10,
-      });
+      expect(mockSavePresetStore).toHaveBeenCalled();
     });
-  });
-
-  test('uses custom loaded settings from localStorage', () => {
-    const customSettings = {
-      rounds: 15,
-      exerciseTime: 60,
-      restTime: 20,
-      prepTime: 12,
-    };
-    mockLoadSettings.mockReturnValue(customSettings);
-
-    render(<App />);
-    
-    // Open settings to verify the loaded values
-    const menuButton = screen.getByLabelText(/open settings/i);
-    fireEvent.click(menuButton);
-
-    expect(screen.getByDisplayValue('15')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('60')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('20')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('12')).toBeInTheDocument();
   });
 });

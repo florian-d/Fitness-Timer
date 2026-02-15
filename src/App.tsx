@@ -79,18 +79,16 @@ function App() {
   };
   const commitDateLabel = formatCommitDate(commitDate);
 
-  const handleSettingsUpdate = (newSettings: WorkoutSettings) => {
-    // Update active preset's settings
+  const handleSettingsUpdate = (presetId: string, newSettings: WorkoutSettings) => {
     const updatedStore = updatePreset(
       presetStore,
-      activePreset.id,
+      presetId,
       { settings: newSettings }
     );
 
     if (updatedStore) {
       setPresetStore(updatedStore);
     }
-    setShowSettings(false);
   };
 
   const handlePresetChange = (presetId: string) => {
@@ -100,13 +98,17 @@ function App() {
     }
   };
 
-  const handlePresetCreate = (name: string, settings: WorkoutSettings): boolean => {
+  const handlePresetCreate = (name: string, settings: WorkoutSettings): string | null => {
     const updatedStore = createPreset(presetStore, name, settings);
     if (updatedStore) {
+      // Find the newly created preset (the one not in the current store)
+      const newPreset = updatedStore.presets.find(
+        p => !presetStore.presets.some(existing => existing.id === p.id)
+      );
       setPresetStore(updatedStore);
-      return true;
+      return newPreset?.id || null;
     }
-    return false;
+    return null;
   };
 
   const handlePresetRename = (presetId: string, newName: string): boolean => {

@@ -31,3 +31,4 @@ yarn-error.log*
 
 #Claude
 .claude
+.mcp.json

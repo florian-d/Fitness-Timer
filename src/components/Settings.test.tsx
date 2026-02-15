@@ -40,7 +40,7 @@ describe('Settings Component', () => {
       <Settings
         settings={settings}
         presetStore={presetStore}
-        activePresetId="preset-1"
+        activePresetId={presetStore.activePresetId}
         onSave={mockOnSave}
         onClose={mockOnClose}
         onPresetCreate={mockOnPresetCreate}
@@ -51,38 +51,52 @@ describe('Settings Component', () => {
     );
   };
 
-  test('renders settings with initial values', () => {
+  test('renders main view with preset list and language', () => {
     renderSettings();
-    
+
     expect(screen.getByText('settings.title')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('8')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('30')).toBeInTheDocument();
-    // Use getById for fields with same value (rest-time and prep-time both have 10)
-    expect(screen.getByRole('spinbutton', { name: 'settings.restTime' })).toHaveValue(10);
-    expect(screen.getByRole('spinbutton', { name: 'settings.prepTime' })).toHaveValue(10);
+    expect(screen.getByText('presets.title')).toBeInTheDocument();
+    expect(screen.getByText('Default')).toBeInTheDocument();
+    expect(screen.getByText('settings.language')).toBeInTheDocument();
+    // Timer values should NOT be visible on main view
+    expect(screen.queryByText('settings.rounds')).not.toBeInTheDocument();
   });
 
-  test('increments rounds when + button is clicked', () => {
+  test('opens sub-page when clicking a preset', () => {
     renderSettings();
-    
+
+    // Click the preset to open sub-page
+    fireEvent.click(screen.getByText('Default'));
+
+    // Sub-page should show preset name and timer values
+    expect(screen.getByText('Default')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('8')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('30')).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: 'settings.restTime' })).toHaveValue(10);
+    expect(screen.getByRole('spinbutton', { name: 'settings.prepTime' })).toHaveValue(10);
+    // Should have switched to this preset
+    expect(mockOnPresetSwitch).toHaveBeenCalledWith('preset-1');
+  });
+
+  test('increments rounds on sub-page when + button is clicked', () => {
+    renderSettings();
+    fireEvent.click(screen.getByText('Default'));
+
     const roundsInput = screen.getByDisplayValue('8');
     const increaseButtons = screen.getAllByLabelText(/increase/i);
-    const roundsIncreaseButton = increaseButtons[0]; // First increase button is for rounds
-    
-    fireEvent.click(roundsIncreaseButton);
-    
+    fireEvent.click(increaseButtons[0]);
+
     expect(roundsInput).toHaveValue(9);
   });
 
-  test('decrements rounds when - button is clicked', () => {
+  test('decrements rounds on sub-page when - button is clicked', () => {
     renderSettings();
-    
+    fireEvent.click(screen.getByText('Default'));
+
     const roundsInput = screen.getByDisplayValue('8');
     const decreaseButtons = screen.getAllByLabelText(/decrease/i);
-    const roundsDecreaseButton = decreaseButtons[0]; // First decrease button is for rounds
-    
-    fireEvent.click(roundsDecreaseButton);
-    
+    fireEvent.click(decreaseButtons[0]);
+
     expect(roundsInput).toHaveValue(7);
   });
 
@@ -93,28 +107,38 @@ describe('Settings Component', () => {
       restTime: 10,
       prepTime: 10,
     };
+    const store: PresetStore = {
+      activePresetId: 'preset-1',
+      presets: [{
+        id: 'preset-1',
+        name: 'Default',
+        settings: settingsWithOneRound,
+        createdAt: Date.now(),
+      }],
+      version: 1,
+    };
 
-    renderSettings(settingsWithOneRound);
-    
+    renderSettings(settingsWithOneRound, store);
+    fireEvent.click(screen.getByText('Default'));
+
     const roundsInput = screen.getByDisplayValue('1');
     const decreaseButtons = screen.getAllByLabelText(/decrease/i);
-    const roundsDecreaseButton = decreaseButtons[0];
-    
-    fireEvent.click(roundsDecreaseButton);
-    
+    fireEvent.click(decreaseButtons[0]);
+
     expect(roundsInput).toHaveValue(1);
   });
 
-  test('calls onSave with updated settings when save button is clicked', () => {
+  test('calls onSave with presetId and updated settings when save button is clicked', () => {
     renderSettings();
-    
+    fireEvent.click(screen.getByText('Default'));
+
     const increaseButtons = screen.getAllByLabelText(/increase/i);
     fireEvent.click(increaseButtons[0]); // Increase rounds
-    
+
     const saveButton = screen.getByText('settings.save');
     fireEvent.click(saveButton);
-    
-    expect(mockOnSave).toHaveBeenCalledWith({
+
+    expect(mockOnSave).toHaveBeenCalledWith('preset-1', {
       rounds: 9,
       exerciseTime: 30,
       restTime: 10,
@@ -122,43 +146,56 @@ describe('Settings Component', () => {
     });
   });
 
+  test('returns to main view after saving', () => {
+    renderSettings();
+    fireEvent.click(screen.getByText('Default'));
+
+    const saveButton = screen.getByText('settings.save');
+    fireEvent.click(saveButton);
+
+    // Should be back on main view
+    expect(screen.getByText('settings.title')).toBeInTheDocument();
+    expect(screen.getByText('presets.title')).toBeInTheDocument();
+  });
+
+  test('returns to main view when back button is clicked', () => {
+    renderSettings();
+    fireEvent.click(screen.getByText('Default'));
+
+    // Should be on sub-page
+    expect(screen.getByLabelText(/back to settings/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText(/back to settings/i));
+
+    // Should be back on main view
+    expect(screen.getByText('settings.title')).toBeInTheDocument();
+    expect(screen.getByText('presets.title')).toBeInTheDocument();
+  });
+
   test('calls onClose when close button is clicked', () => {
     renderSettings();
-    
+
     const closeButton = screen.getByLabelText(/close settings/i);
     fireEvent.click(closeButton);
-    
+
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  test('displays workout summary with correct total time', () => {
+  test('displays workout summary on sub-page', () => {
     renderSettings();
-    
-    // 8 rounds * 30 sec exercise + 7 rest periods * 10 sec rest = 240 + 70 = 310 seconds = 6 minutes (rounded up)
-    // With i18n mock, interpolation replaces {{minutes}} with actual value
+    fireEvent.click(screen.getByText('Default'));
+
+    expect(screen.getByText('settings.summary')).toBeInTheDocument();
     expect(screen.getByText('settings.totalTime')).toBeInTheDocument();
   });
 
-  test('updates workout summary when settings change', () => {
+  test('allows manual input of values on sub-page', () => {
     renderSettings();
-    
-    const increaseButtons = screen.getAllByLabelText(/increase/i);
-    const exerciseIncreaseButton = increaseButtons[1]; // Second increase button is for exercise time
-    
-    // Increase exercise time (30 + 5 = 35)
-    fireEvent.click(exerciseIncreaseButton);
-    
-    // With i18n mock, we just check that the summary element exists
-    expect(screen.getByText('settings.summary')).toBeInTheDocument();
-  });
+    fireEvent.click(screen.getByText('Default'));
 
-  test('allows manual input of values', () => {
-    renderSettings();
-    
     const roundsInput = screen.getByDisplayValue('8');
-    
     fireEvent.change(roundsInput, { target: { value: '12' } });
-    
+
     expect(roundsInput).toHaveValue(12);
   });
 });

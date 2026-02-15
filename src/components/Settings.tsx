@@ -7,9 +7,9 @@ interface SettingsProps {
   settings: WorkoutSettings;
   presetStore: PresetStore;
   activePresetId: string;
-  onSave: (settings: WorkoutSettings) => void;
+  onSave: (presetId: string, settings: WorkoutSettings) => void;
   onClose: () => void;
-  onPresetCreate: (name: string, settings: WorkoutSettings) => boolean;
+  onPresetCreate: (name: string, settings: WorkoutSettings) => string | null;
   onPresetRename: (presetId: string, newName: string) => boolean;
   onPresetDelete: (presetId: string) => boolean;
   onPresetSwitch: (presetId: string) => void;
@@ -27,6 +27,11 @@ const Settings: React.FC<SettingsProps> = ({
   onPresetSwitch,
 }) => {
   const { t, i18n } = useTranslation();
+
+  // Sub-page state: which preset's settings are being edited
+  const [editingPresetSettings, setEditingPresetSettings] = useState<string | null>(null);
+
+  // Timer value state (used in sub-page)
   const [rounds, setRounds] = useState(settings.rounds);
   const [exerciseTime, setExerciseTime] = useState(settings.exerciseTime);
   const [restTime, setRestTime] = useState(settings.restTime);
@@ -52,21 +57,43 @@ const Settings: React.FC<SettingsProps> = ({
     });
   };
 
-  const handleSave = () => {
-    onSave({
+  const openPresetSettings = (presetId: string) => {
+    const preset = presetStore.presets.find(p => p.id === presetId);
+    if (!preset) return;
+    // Switch to this preset as active
+    onPresetSwitch(presetId);
+    // Load its settings into local state
+    setRounds(preset.settings.rounds);
+    setExerciseTime(preset.settings.exerciseTime);
+    setRestTime(preset.settings.restTime);
+    setPrepTime(preset.settings.prepTime);
+    // Open sub-page
+    setEditingPresetSettings(presetId);
+  };
+
+  const handleSavePresetSettings = () => {
+    if (!editingPresetSettings) return;
+    onSave(editingPresetSettings, {
       rounds,
       exerciseTime,
       restTime,
       prepTime,
     });
+    setEditingPresetSettings(null);
+  };
+
+  const handleBackFromSubpage = () => {
+    setEditingPresetSettings(null);
   };
 
   const handleCreatePreset = () => {
-    const success = onPresetCreate(newPresetName, settings);
-    if (success) {
+    const newPresetId = onPresetCreate(newPresetName, settings);
+    if (newPresetId) {
       setNewPresetName('');
       setShowNewPresetForm(false);
       setPresetError('');
+      // Open sub-page for the new preset
+      openPresetSettings(newPresetId);
     } else {
       setPresetError(t('presets.error.nameTaken') as string);
     }
@@ -102,6 +129,145 @@ const Settings: React.FC<SettingsProps> = ({
     }
   };
 
+  // Get the name of the preset being edited in sub-page
+  const editingPreset = editingPresetSettings
+    ? presetStore.presets.find(p => p.id === editingPresetSettings)
+    : null;
+
+  // Sub-page: edit preset timer values
+  if (editingPresetSettings && editingPreset) {
+    return (
+      <div className="settings-container">
+        <div className="settings-header">
+          <button className="back-button" onClick={handleBackFromSubpage} aria-label="Back to settings">
+            ←
+          </button>
+          <h1 className="subpage-title">{editingPreset.name}</h1>
+          <div className="header-spacer"></div>
+        </div>
+
+        <div className="settings-content">
+          <div className="setting-item">
+            <label htmlFor="rounds">{t('settings.rounds')}</label>
+            <div className="input-group">
+              <button
+                onClick={() => setRounds(Math.max(1, rounds - 1))}
+                aria-label="Decrease rounds"
+              >
+                −
+              </button>
+              <input
+                id="rounds"
+                type="number"
+                min="1"
+                max="50"
+                value={rounds}
+                onChange={(e) => setRounds(Math.max(1, parseInt(e.target.value) || 1))}
+              />
+              <button
+                onClick={() => setRounds(Math.min(50, rounds + 1))}
+                aria-label="Increase rounds"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div className="setting-item">
+            <label htmlFor="exercise-time">{t('settings.exerciseTime')}</label>
+            <div className="input-group">
+              <button
+                onClick={() => setExerciseTime(Math.max(5, exerciseTime - 5))}
+                aria-label="Decrease exercise time"
+              >
+                −
+              </button>
+              <input
+                id="exercise-time"
+                type="number"
+                min="5"
+                max="600"
+                step="5"
+                value={exerciseTime}
+                onChange={(e) => setExerciseTime(Math.max(5, parseInt(e.target.value) || 5))}
+              />
+              <button
+                onClick={() => setExerciseTime(Math.min(600, exerciseTime + 5))}
+                aria-label="Increase exercise time"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div className="setting-item">
+            <label htmlFor="rest-time">{t('settings.restTime')}</label>
+            <div className="input-group">
+              <button
+                onClick={() => setRestTime(Math.max(5, restTime - 5))}
+                aria-label="Decrease rest time"
+              >
+                −
+              </button>
+              <input
+                id="rest-time"
+                type="number"
+                min="5"
+                max="300"
+                step="5"
+                value={restTime}
+                onChange={(e) => setRestTime(Math.max(5, parseInt(e.target.value) || 5))}
+              />
+              <button
+                onClick={() => setRestTime(Math.min(300, restTime + 5))}
+                aria-label="Increase rest time"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div className="setting-item">
+            <label htmlFor="prep-time">{t('settings.prepTime')}</label>
+            <div className="input-group">
+              <button
+                onClick={() => setPrepTime(Math.max(3, prepTime - 1))}
+                aria-label="Decrease preparation time"
+              >
+                −
+              </button>
+              <input
+                id="prep-time"
+                type="number"
+                min="3"
+                max="30"
+                step="1"
+                value={prepTime}
+                onChange={(e) => setPrepTime(Math.max(3, parseInt(e.target.value) || 3))}
+              />
+              <button
+                onClick={() => setPrepTime(Math.min(30, prepTime + 1))}
+                aria-label="Increase preparation time"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div className="settings-summary">
+            <h3>{t('settings.summary')}</h3>
+            <p>{t('settings.totalTime', { minutes: Math.ceil((exerciseTime * rounds + restTime * (rounds - 1)) / 60) })}</p>
+          </div>
+
+          <button className="save-button" onClick={handleSavePresetSettings}>
+            {t('settings.save')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Main view: preset list + language
   return (
     <div className="settings-container">
       <div className="settings-header">
@@ -110,7 +276,7 @@ const Settings: React.FC<SettingsProps> = ({
           ✕
         </button>
       </div>
-      
+
       <div className="settings-content">
         {/* Preset Management Section */}
         <div className="preset-section">
@@ -145,7 +311,7 @@ const Settings: React.FC<SettingsProps> = ({
                   <>
                     <button
                       className="preset-select-button"
-                      onClick={() => onPresetSwitch(preset.id)}
+                      onClick={() => openPresetSettings(preset.id)}
                     >
                       <span className="preset-name">{preset.name}</span>
                       {preset.id === activePresetId && <span className="active-indicator">●</span>}
@@ -231,122 +397,6 @@ const Settings: React.FC<SettingsProps> = ({
             </select>
           </div>
         </div>
-
-        <div className="setting-item">
-          <label htmlFor="rounds">{t('settings.rounds')}</label>
-          <div className="input-group">
-            <button 
-              onClick={() => setRounds(Math.max(1, rounds - 1))}
-              aria-label="Decrease rounds"
-            >
-              −
-            </button>
-            <input
-              id="rounds"
-              type="number"
-              min="1"
-              max="50"
-              value={rounds}
-              onChange={(e) => setRounds(Math.max(1, parseInt(e.target.value) || 1))}
-            />
-            <button 
-              onClick={() => setRounds(Math.min(50, rounds + 1))}
-              aria-label="Increase rounds"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <div className="setting-item">
-          <label htmlFor="exercise-time">{t('settings.exerciseTime')}</label>
-          <div className="input-group">
-            <button 
-              onClick={() => setExerciseTime(Math.max(5, exerciseTime - 5))}
-              aria-label="Decrease exercise time"
-            >
-              −
-            </button>
-            <input
-              id="exercise-time"
-              type="number"
-              min="5"
-              max="600"
-              step="5"
-              value={exerciseTime}
-              onChange={(e) => setExerciseTime(Math.max(5, parseInt(e.target.value) || 5))}
-            />
-            <button 
-              onClick={() => setExerciseTime(Math.min(600, exerciseTime + 5))}
-              aria-label="Increase exercise time"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <div className="setting-item">
-          <label htmlFor="rest-time">{t('settings.restTime')}</label>
-          <div className="input-group">
-            <button 
-              onClick={() => setRestTime(Math.max(5, restTime - 5))}
-              aria-label="Decrease rest time"
-            >
-              −
-            </button>
-            <input
-              id="rest-time"
-              type="number"
-              min="5"
-              max="300"
-              step="5"
-              value={restTime}
-              onChange={(e) => setRestTime(Math.max(5, parseInt(e.target.value) || 5))}
-            />
-            <button 
-              onClick={() => setRestTime(Math.min(300, restTime + 5))}
-              aria-label="Increase rest time"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <div className="setting-item">
-          <label htmlFor="prep-time">{t('settings.prepTime')}</label>
-          <div className="input-group">
-            <button 
-              onClick={() => setPrepTime(Math.max(3, prepTime - 1))}
-              aria-label="Decrease preparation time"
-            >
-              −
-            </button>
-            <input
-              id="prep-time"
-              type="number"
-              min="3"
-              max="30"
-              step="1"
-              value={prepTime}
-              onChange={(e) => setPrepTime(Math.max(3, parseInt(e.target.value) || 3))}
-            />
-            <button 
-              onClick={() => setPrepTime(Math.min(30, prepTime + 1))}
-              aria-label="Increase preparation time"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        <div className="settings-summary">
-          <h3>{t('settings.summary')}</h3>
-          <p>{t('settings.totalTime', { minutes: Math.ceil((exerciseTime * rounds + restTime * (rounds - 1)) / 60) })}</p>
-        </div>
-
-        <button className="save-button" onClick={handleSave}>
-          {t('settings.save')}
-        </button>
       </div>
     </div>
   );
