@@ -27,3 +27,7 @@ yarn-error.log*
 
 # Playwright
 .playwright-mcp/
+
+
+#Claude
+.claude

@@ -1,13 +1,17 @@
 import React, { useEffect, useCallback, useRef, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WorkoutSettings } from '../App';
+import { WorkoutSettings, WorkoutPreset } from '../App';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { trackEvent } from '../utils/analytics';
 import './Timer.css';
 
 interface TimerProps {
   settings: WorkoutSettings;
+  activePresetName: string;
+  presets: WorkoutPreset[];
+  activePresetId: string;
   onRunningChange: (isRunning: boolean) => void;
+  onPresetChange: (presetId: string) => void;
 }
 
 type Phase = 'ready' | 'prepare' | 'exercise' | 'rest' | 'complete';
@@ -27,7 +31,14 @@ type TimerEvent =
   | { type: 'TICK' }
   | { type: 'SYNC_SETTINGS' };
 
-const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
+const Timer: React.FC<TimerProps> = ({
+  settings,
+  activePresetName,
+  presets,
+  activePresetId,
+  onRunningChange,
+  onPresetChange
+}) => {
   const { t } = useTranslation();
 
   const reducer = (currentState: TimerState, event: TimerEvent): TimerState => {
@@ -328,21 +339,41 @@ const Timer: React.FC<TimerProps> = ({ settings, onRunningChange }) => {
   return (
     <div className="timer-container" style={{ backgroundColor: getPhaseColor() }}>
       <div className="timer-content">
+        {/* Preset: dropdown before training, read-only label during training */}
+        {state.phase === 'ready' && presets.length > 1 ? (
+          <div className="preset-selector">
+            <select
+              id="preset-select"
+              value={activePresetId}
+              onChange={(e) => onPresetChange(e.target.value)}
+              className="preset-dropdown"
+            >
+              {presets.map(preset => (
+                <option key={preset.id} value={preset.id}>
+                  {preset.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <div className="preset-label">{activePresetName}</div>
+        )}
+
         <div className="phase-text">{getPhaseText()}</div>
         <div className="timer-display">
           {state.phase === 'ready' ? t('timer.tapToStart') : formatTime(state.timeRemaining)}
         </div>
         <div className="controls">
-          <button 
-            className="control-button start-pause-button" 
+          <button
+            className="control-button start-pause-button"
             onClick={handleStartPause}
             aria-label={state.phase === 'ready' ? 'Start' : state.isRunning ? 'Pause' : 'Resume'}
           >
             {state.phase === 'ready' || state.phase === 'complete' ? '▶' : state.isRunning ? '⏸' : '▶'}
           </button>
           {state.phase !== 'ready' && state.phase !== 'complete' && (
-            <button 
-              className="control-button reset-button" 
+            <button
+              className="control-button reset-button"
               onClick={handleReset}
               aria-label="Reset"
             >

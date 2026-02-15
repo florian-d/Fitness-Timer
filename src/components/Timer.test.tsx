@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import Timer from './Timer';
-import { WorkoutSettings } from '../App';
+import { WorkoutSettings, WorkoutPreset } from '../App';
 
 const mockSettings: WorkoutSettings = {
   rounds: 2,
@@ -10,7 +10,17 @@ const mockSettings: WorkoutSettings = {
   prepTime: 2,
 };
 
+const mockPresets: WorkoutPreset[] = [
+  {
+    id: 'preset-1',
+    name: 'Default',
+    settings: mockSettings,
+    createdAt: Date.now(),
+  },
+];
+
 const mockOnRunningChange = jest.fn();
+const mockOnPresetChange = jest.fn();
 
 const advanceTime = (ms: number) => {
   act(() => {
@@ -42,14 +52,27 @@ describe('Timer Component', () => {
     jest.useRealTimers();
   });
 
+  const renderTimer = (settings = mockSettings, presets = mockPresets) => {
+    return render(
+      <Timer
+        settings={settings}
+        activePresetName="Default"
+        presets={presets}
+        activePresetId="preset-1"
+        onRunningChange={mockOnRunningChange}
+        onPresetChange={mockOnPresetChange}
+      />
+    );
+  };
+
   test('renders in ready state', () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     expect(screen.getByText('timer.ready')).toBeInTheDocument();
     expect(screen.getByText('timer.tapToStart')).toBeInTheDocument();
   });
 
   test('starts timer when play button is clicked', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -59,7 +82,7 @@ describe('Timer Component', () => {
   });
 
   test('formats time correctly', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -69,7 +92,7 @@ describe('Timer Component', () => {
   });
 
   test('counts down exercise time', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -94,7 +117,7 @@ describe('Timer Component', () => {
   });
 
   test('transitions from exercise to rest', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -114,7 +137,7 @@ describe('Timer Component', () => {
   });
 
   test('transitions from rest to next exercise round', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -141,7 +164,7 @@ describe('Timer Component', () => {
   });
 
   test('completes workout after all rounds', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -168,7 +191,7 @@ describe('Timer Component', () => {
   });
 
   test('pause and resume functionality', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -197,7 +220,7 @@ describe('Timer Component', () => {
   });
 
   test('reset functionality', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -220,7 +243,7 @@ describe('Timer Component', () => {
   });
 
   test('calls onRunningChange callback', async () => {
-    render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+    renderTimer();
     const startButton = screen.getByLabelText(/start/i);
     fireEvent.click(startButton);
 
@@ -231,7 +254,7 @@ describe('Timer Component', () => {
 
   describe('Preparation Phase', () => {
     test('shows preparation phase after start', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -242,7 +265,7 @@ describe('Timer Component', () => {
     });
 
     test('transitions from prepare to exercise', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -259,7 +282,7 @@ describe('Timer Component', () => {
     });
 
     test('counts down during prepare phase', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -275,7 +298,7 @@ describe('Timer Component', () => {
     });
 
     test('can pause during prepare phase', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -292,7 +315,7 @@ describe('Timer Component', () => {
     });
 
     test('displays yellow background during prepare phase', async () => {
-      const { container } = render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      const { container } = renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -320,7 +343,7 @@ describe('Timer Component', () => {
         return mockAudio;
       });
 
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -362,7 +385,7 @@ describe('Timer Component', () => {
     });
 
     test('plays bell sound when exercise phase completes', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -388,7 +411,7 @@ describe('Timer Component', () => {
     });
 
     test('plays bell sound when rest phase completes', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -417,7 +440,7 @@ describe('Timer Component', () => {
     });
 
     test('plays bell sound when workout completes', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -462,7 +485,7 @@ describe('Timer Component', () => {
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -509,7 +532,7 @@ describe('Timer Component', () => {
     });
 
     test('requests wake lock during exercise phase', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -527,7 +550,7 @@ describe('Timer Component', () => {
     });
 
     test('releases wake lock during rest phase', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -552,7 +575,7 @@ describe('Timer Component', () => {
     });
 
     test('releases wake lock when paused during exercise', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 
@@ -579,7 +602,7 @@ describe('Timer Component', () => {
     });
 
     test('requests wake lock again when resuming exercise', async () => {
-      render(<Timer settings={mockSettings} onRunningChange={mockOnRunningChange} />);
+      renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
 

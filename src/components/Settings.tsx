@@ -1,20 +1,43 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WorkoutSettings } from '../App';
+import { WorkoutSettings, PresetStore } from '../App';
 import './Settings.css';
 
 interface SettingsProps {
   settings: WorkoutSettings;
+  presetStore: PresetStore;
+  activePresetId: string;
   onSave: (settings: WorkoutSettings) => void;
   onClose: () => void;
+  onPresetCreate: (name: string, settings: WorkoutSettings) => boolean;
+  onPresetRename: (presetId: string, newName: string) => boolean;
+  onPresetDelete: (presetId: string) => boolean;
+  onPresetSwitch: (presetId: string) => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
+const Settings: React.FC<SettingsProps> = ({
+  settings,
+  presetStore,
+  activePresetId,
+  onSave,
+  onClose,
+  onPresetCreate,
+  onPresetRename,
+  onPresetDelete,
+  onPresetSwitch,
+}) => {
   const { t, i18n } = useTranslation();
   const [rounds, setRounds] = useState(settings.rounds);
   const [exerciseTime, setExerciseTime] = useState(settings.exerciseTime);
   const [restTime, setRestTime] = useState(settings.restTime);
   const [prepTime, setPrepTime] = useState(settings.prepTime);
+
+  // Preset management state
+  const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
+  const [editingPresetName, setEditingPresetName] = useState('');
+  const [showNewPresetForm, setShowNewPresetForm] = useState(false);
+  const [newPresetName, setNewPresetName] = useState('');
+  const [presetError, setPresetError] = useState('');
 
   // Get current language, defaulting to 'en' if not supported
   const supportedLanguages = ['en', 'de'];
@@ -38,6 +61,47 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
     });
   };
 
+  const handleCreatePreset = () => {
+    const success = onPresetCreate(newPresetName, settings);
+    if (success) {
+      setNewPresetName('');
+      setShowNewPresetForm(false);
+      setPresetError('');
+    } else {
+      setPresetError(t('presets.error.nameTaken') as string);
+    }
+  };
+
+  const handleRenamePreset = (presetId: string) => {
+    const success = onPresetRename(presetId, editingPresetName);
+    if (success) {
+      setEditingPresetId(null);
+      setPresetError('');
+    } else {
+      setPresetError(t('presets.error.nameTaken') as string);
+    }
+  };
+
+  const handleDeletePreset = (presetId: string, presetName: string) => {
+    if (presetStore.presets.length <= 1) {
+      setPresetError(t('presets.error.cannotDeleteLast') as string);
+      return;
+    }
+    if (window.confirm(t('presets.confirmDelete', { name: presetName }) as string)) {
+      onPresetDelete(presetId);
+      setPresetError('');
+    }
+  };
+
+  const handleAddNewPreset = () => {
+    if (presetStore.presets.length >= 20) {
+      setPresetError(t('presets.error.tooMany') as string);
+    } else {
+      setShowNewPresetForm(true);
+      setPresetError('');
+    }
+  };
+
   return (
     <div className="settings-container">
       <div className="settings-header">
@@ -48,6 +112,111 @@ const Settings: React.FC<SettingsProps> = ({ settings, onSave, onClose }) => {
       </div>
       
       <div className="settings-content">
+        {/* Preset Management Section */}
+        <div className="preset-section">
+          <h3>{t('presets.title')}</h3>
+
+          {/* Preset List */}
+          <div className="preset-list">
+            {presetStore.presets.map(preset => (
+              <div
+                key={preset.id}
+                className={`preset-item ${preset.id === activePresetId ? 'active' : ''}`}
+              >
+                {editingPresetId === preset.id ? (
+                  <div className="preset-edit">
+                    <input
+                      type="text"
+                      value={editingPresetName}
+                      onChange={(e) => setEditingPresetName(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleRenamePreset(preset.id);
+                        }
+                      }}
+                      autoFocus
+                    />
+                    <button onClick={() => handleRenamePreset(preset.id)}>
+                      ✓
+                    </button>
+                    <button onClick={() => setEditingPresetId(null)}>✕</button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      className="preset-select-button"
+                      onClick={() => onPresetSwitch(preset.id)}
+                    >
+                      <span className="preset-name">{preset.name}</span>
+                      {preset.id === activePresetId && <span className="active-indicator">●</span>}
+                    </button>
+                    <button
+                      className="preset-action-button"
+                      onClick={() => {
+                        setEditingPresetId(preset.id);
+                        setEditingPresetName(preset.name);
+                      }}
+                      aria-label={t('presets.rename') as string}
+                    >
+                      ✏
+                    </button>
+                    <button
+                      className="preset-action-button"
+                      onClick={() => handleDeletePreset(preset.id, preset.name)}
+                      disabled={presetStore.presets.length <= 1}
+                      aria-label={t('presets.delete') as string}
+                    >
+                      🗑
+                    </button>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* New Preset Form */}
+          {showNewPresetForm ? (
+            <div className="new-preset-form">
+              <input
+                type="text"
+                placeholder={t('presets.newPresetPlaceholder') as string}
+                value={newPresetName}
+                onChange={(e) => setNewPresetName(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCreatePreset();
+                  }
+                }}
+                autoFocus
+              />
+              <button onClick={handleCreatePreset}>
+                {t('presets.create')}
+              </button>
+              <button onClick={() => {
+                setShowNewPresetForm(false);
+                setNewPresetName('');
+                setPresetError('');
+              }}>
+                {t('presets.cancel')}
+              </button>
+            </div>
+          ) : (
+            <button
+              className="add-preset-button"
+              onClick={handleAddNewPreset}
+            >
+              + {t('presets.addNew')}
+            </button>
+          )}
+
+          {/* Error Message */}
+          {presetError && (
+            <div className="preset-error">{presetError}</div>
+          )}
+        </div>
+
+        <div className="settings-divider"></div>
+
         <div className="setting-item">
           <label htmlFor="language">{t('settings.language')}</label>
           <div className="input-group">

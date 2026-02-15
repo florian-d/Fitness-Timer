@@ -5,7 +5,8 @@
     "exercise": "EXERCISE - Round {{current}}/{{total}}",
     "rest": "REST - Round {{current}}/{{total}}",
     "complete": "COMPLETE!",
-    "tapToStart": "TAP TO START"
+    "tapToStart": "TAP TO START",
+    "preset": "Select Preset"
   },
   "settings": {
     "title": "Settings",
@@ -17,6 +18,21 @@
     "totalTime": "Total Time: {{minutes}} minutes",
     "save": "Save & Start",
     "language": "Language"
+  },
+  "presets": {
+    "title": "Workout Presets",
+    "addNew": "Add New Preset",
+    "create": "Create",
+    "cancel": "Cancel",
+    "rename": "Rename Preset",
+    "delete": "Delete Preset",
+    "newPresetPlaceholder": "Enter preset name...",
+    "confirmDelete": "Delete preset '{{name}}'? This cannot be undone.",
+    "error": {
+      "nameTaken": "A preset with this name already exists",
+      "cannotDeleteLast": "Cannot delete the last preset",
+      "tooMany": "Maximum 20 presets allowed"
+    }
   },
   "app": {
     "commit": "Commit: {{label}}"

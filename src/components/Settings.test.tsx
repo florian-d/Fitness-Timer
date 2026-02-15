@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Settings from './Settings';
-import { WorkoutSettings } from '../App';
+import { WorkoutSettings, PresetStore } from '../App';
 
 const mockSettings: WorkoutSettings = {
   rounds: 8,
@@ -10,16 +10,49 @@ const mockSettings: WorkoutSettings = {
   prepTime: 10,
 };
 
+const mockPresetStore: PresetStore = {
+  activePresetId: 'preset-1',
+  presets: [
+    {
+      id: 'preset-1',
+      name: 'Default',
+      settings: mockSettings,
+      createdAt: Date.now(),
+    },
+  ],
+  version: 1,
+};
+
 const mockOnSave = jest.fn();
 const mockOnClose = jest.fn();
+const mockOnPresetCreate = jest.fn();
+const mockOnPresetRename = jest.fn();
+const mockOnPresetDelete = jest.fn();
+const mockOnPresetSwitch = jest.fn();
 
 describe('Settings Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  const renderSettings = (settings = mockSettings, presetStore = mockPresetStore) => {
+    return render(
+      <Settings
+        settings={settings}
+        presetStore={presetStore}
+        activePresetId="preset-1"
+        onSave={mockOnSave}
+        onClose={mockOnClose}
+        onPresetCreate={mockOnPresetCreate}
+        onPresetRename={mockOnPresetRename}
+        onPresetDelete={mockOnPresetDelete}
+        onPresetSwitch={mockOnPresetSwitch}
+      />
+    );
+  };
+
   test('renders settings with initial values', () => {
-    render(<Settings settings={mockSettings} onSave={mockOnSave} onClose={mockOnClose} />);
+    renderSettings();
     
     expect(screen.getByText('settings.title')).toBeInTheDocument();
     expect(screen.getByDisplayValue('8')).toBeInTheDocument();
@@ -30,7 +63,7 @@ describe('Settings Component', () => {
   });
 
   test('increments rounds when + button is clicked', () => {
-    render(<Settings settings={mockSettings} onSave={mockOnSave} onClose={mockOnClose} />);
+    renderSettings();
     
     const roundsInput = screen.getByDisplayValue('8');
     const increaseButtons = screen.getAllByLabelText(/increase/i);
@@ -42,7 +75,7 @@ describe('Settings Component', () => {
   });
 
   test('decrements rounds when - button is clicked', () => {
-    render(<Settings settings={mockSettings} onSave={mockOnSave} onClose={mockOnClose} />);
+    renderSettings();
     
     const roundsInput = screen.getByDisplayValue('8');
     const decreaseButtons = screen.getAllByLabelText(/decrease/i);
@@ -60,8 +93,8 @@ describe('Settings Component', () => {
       restTime: 10,
       prepTime: 10,
     };
-    
-    render(<Settings settings={settingsWithOneRound} onSave={mockOnSave} onClose={mockOnClose} />);
+
+    renderSettings(settingsWithOneRound);
     
     const roundsInput = screen.getByDisplayValue('1');
     const decreaseButtons = screen.getAllByLabelText(/decrease/i);
@@ -73,7 +106,7 @@ describe('Settings Component', () => {
   });
 
   test('calls onSave with updated settings when save button is clicked', () => {
-    render(<Settings settings={mockSettings} onSave={mockOnSave} onClose={mockOnClose} />);
+    renderSettings();
     
     const increaseButtons = screen.getAllByLabelText(/increase/i);
     fireEvent.click(increaseButtons[0]); // Increase rounds
@@ -90,7 +123,7 @@ describe('Settings Component', () => {
   });
 
   test('calls onClose when close button is clicked', () => {
-    render(<Settings settings={mockSettings} onSave={mockOnSave} onClose={mockOnClose} />);
+    renderSettings();
     
     const closeButton = screen.getByLabelText(/close settings/i);
     fireEvent.click(closeButton);
@@ -99,7 +132,7 @@ describe('Settings Component', () => {
   });
 
   test('displays workout summary with correct total time', () => {
-    render(<Settings settings={mockSettings} onSave={mockOnSave} onClose={mockOnClose} />);
+    renderSettings();
     
     // 8 rounds * 30 sec exercise + 7 rest periods * 10 sec rest = 240 + 70 = 310 seconds = 6 minutes (rounded up)
     // With i18n mock, interpolation replaces {{minutes}} with actual value
@@ -107,7 +140,7 @@ describe('Settings Component', () => {
   });
 
   test('updates workout summary when settings change', () => {
-    render(<Settings settings={mockSettings} onSave={mockOnSave} onClose={mockOnClose} />);
+    renderSettings();
     
     const increaseButtons = screen.getAllByLabelText(/increase/i);
     const exerciseIncreaseButton = increaseButtons[1]; // Second increase button is for exercise time
@@ -120,7 +153,7 @@ describe('Settings Component', () => {
   });
 
   test('allows manual input of values', () => {
-    render(<Settings settings={mockSettings} onSave={mockOnSave} onClose={mockOnClose} />);
+    renderSettings();
     
     const roundsInput = screen.getByDisplayValue('8');
     
