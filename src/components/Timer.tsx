@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { WorkoutSettings, WorkoutPreset } from '../App';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { trackEvent } from '../utils/analytics';
-import { timerReducer, getInitialTimerState, TimerState, TimerEvent } from '../utils/timerReducer';
+import { timerReducer, getInitialTimerState, TimerState, TimerEvent, Phase } from '../utils/timerReducer';
 import { PlayIcon, PauseIcon, ResetIcon } from '../utils/icons';
 import './Timer.css';
 

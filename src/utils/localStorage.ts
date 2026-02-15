@@ -185,4 +185,7 @@ export {
   deletePreset,
   setActivePreset,
   isPresetNameUnique,
+  DEFAULT_SETTINGS,
+  DEFAULT_PRESET_NAME,
+  isLocalStorageAvailable,
 } from './presetStorage';
