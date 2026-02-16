@@ -16,6 +16,82 @@ interface TimerProps {
   onPresetChange: (presetId: string) => void;
 }
 
+/**
+ * Calculate total remaining time for the workout
+ * Includes current phase time + all future phases
+ */
+export const calculateTotalRemainingTime = (
+  state: TimerState,
+  settings: WorkoutSettings
+): number => {
+  let remaining = state.timeRemaining;
+
+  switch (state.phase) {
+    case Phase.Prepare:
+      // Add all exercise rounds
+      remaining += settings.rounds * settings.exerciseTime;
+      // Add all rest periods (one less than rounds)
+      remaining += (settings.rounds - 1) * settings.restTime;
+      break;
+
+    case Phase.Exercise:
+      // Calculate remaining rounds after current one
+      const remainingRoundsAfterCurrent = settings.rounds - state.currentRound;
+      // Add remaining exercises (after this one)
+      remaining += remainingRoundsAfterCurrent * settings.exerciseTime;
+      // Add remaining rest periods (after this exercise)
+      remaining += remainingRoundsAfterCurrent * settings.restTime;
+      break;
+
+    case Phase.Rest:
+      // Calculate remaining rounds (including current rest)
+      const remainingRoundsInRest = settings.rounds - state.currentRound;
+      // Add remaining exercises
+      remaining += remainingRoundsInRest * settings.exerciseTime;
+      // Add remaining rest periods (one less than remaining exercises)
+      remaining += (remainingRoundsInRest - 1) * settings.restTime;
+      break;
+
+    default:
+      // Ready and Complete phases have no remaining time
+      remaining = 0;
+  }
+
+  return remaining;
+};
+
+/**
+ * Calculate remaining exercise time only (excluding rest periods)
+ * Shows how much "work" time is left in the workout
+ */
+export const calculateExerciseTimeRemaining = (
+  state: TimerState,
+  settings: WorkoutSettings
+): number => {
+  const { phase, currentRound, timeRemaining } = state;
+  const { rounds, exerciseTime } = settings;
+
+  // In Ready or Complete phase, no exercise time remaining
+  if (phase === Phase.Ready || phase === Phase.Complete) {
+    return 0;
+  }
+
+  const remainingRounds = rounds - currentRound;
+
+  if (phase === Phase.Prepare) {
+    // All rounds including current round
+    return (remainingRounds + 1) * exerciseTime;
+  } else if (phase === Phase.Exercise) {
+    // Current phase time + remaining rounds
+    return timeRemaining + remainingRounds * exerciseTime;
+  } else if (phase === Phase.Rest) {
+    // Only remaining rounds (current round's exercise is done)
+    return remainingRounds * exerciseTime;
+  }
+
+  return 0;
+};
+
 const Timer: React.FC<TimerProps> = ({
   settings,
   activePresetName,
@@ -235,6 +311,20 @@ const Timer: React.FC<TimerProps> = ({
 
   return (
     <div className="timer-container" style={{ backgroundColor: getPhaseColor() }}>
+      {/* Info areas - visible only during training */}
+      {(state.phase === Phase.Prepare ||
+        state.phase === Phase.Exercise ||
+        state.phase === Phase.Rest) && (
+        <>
+          <div className="info-top">
+            {t('timer.totalRemaining', { time: formatTime(calculateTotalRemainingTime(state, settings)) })}
+          </div>
+          <div className="info-bottom">
+            {t('timer.exerciseRemaining', { time: formatTime(calculateExerciseTimeRemaining(state, settings)) })}
+          </div>
+        </>
+      )}
+
       <div className="timer-content">
         {/* Preset: dropdown before training, read-only label during training */}
         {state.phase === Phase.Ready && presets.length > 1 ? (

@@ -1,13 +1,20 @@
 .timer-container {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  grid-template-rows: auto auto 3fr auto minmax(60px, auto);
+  grid-template-areas:
+    ". . ."
+    ". info-top ."
+    ". main ."
+    ". info-bottom ."
+    ". . .";
   width: 100%;
   height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: background-color 0.5s ease;
 }
 
 .timer-content {
+  grid-area: main;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -159,6 +166,35 @@
   backdrop-filter: blur(5px);
 }
 
+/* Training info areas */
+.info-top {
+  grid-area: info-top;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.85;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  text-align: center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.info-bottom {
+  grid-area: info-bottom;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.85;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  text-align: center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 /* Mobile optimizations for preset elements */
 @media (max-width: 768px) {
   .preset-dropdown {
@@ -170,6 +206,12 @@
   .preset-label {
     font-size: 13px;
     padding: 5px 10px;
+  }
+
+  .info-top,
+  .info-bottom {
+    font-size: 16px;
+    padding: 10px;
   }
 }
 
@@ -183,5 +225,11 @@
   .preset-label {
     font-size: 12px;
     padding: 4px 8px;
+  }
+
+  .info-top,
+  .info-bottom {
+    font-size: 14px;
+    padding: 8px;
   }
 }
