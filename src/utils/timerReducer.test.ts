@@ -13,7 +13,7 @@ describe('timerReducer', () => {
     test('returns correct initial state', () => {
       const state = getInitialTimerState(mockSettings.prepTime);
       expect(state).toEqual({
-        phase: 'ready',
+        phase: Phase.Ready,
         currentRound: 1,
         timeRemaining: 5,
         isRunning: false,
@@ -25,20 +25,20 @@ describe('timerReducer', () => {
     test('starts timer from ready state', () => {
       const state = getInitialTimerState(mockSettings.prepTime);
       const newState = timerReducer(state, { type: 'START' }, mockSettings);
-      expect(newState.phase).toBe('prepare');
+      expect(newState.phase).toBe(Phase.Prepare);
       expect(newState.isRunning).toBe(true);
       expect(newState.timeRemaining).toBe(mockSettings.prepTime);
     });
 
     test('resets timer from complete state', () => {
       const state: TimerState = {
-        phase: 'complete',
+        phase: Phase.Complete,
         currentRound: 3,
         timeRemaining: 0,
         isRunning: false,
       };
       const newState = timerReducer(state, { type: 'START' }, mockSettings);
-      expect(newState.phase).toBe('ready');
+      expect(newState.phase).toBe(Phase.Ready);
       expect(newState.isRunning).toBe(false);
       expect(newState.currentRound).toBe(1);
     });
@@ -47,19 +47,19 @@ describe('timerReducer', () => {
   describe('PAUSE action', () => {
     test('pauses running timer', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 1,
         timeRemaining: 25,
         isRunning: true,
       };
       const newState = timerReducer(state, { type: 'PAUSE' }, mockSettings);
       expect(newState.isRunning).toBe(false);
-      expect(newState.phase).toBe('exercise');
+      expect(newState.phase).toBe(Phase.Exercise);
     });
 
     test('does nothing if already paused', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 1,
         timeRemaining: 25,
         isRunning: false,
@@ -72,7 +72,7 @@ describe('timerReducer', () => {
   describe('RESUME action', () => {
     test('resumes paused timer', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 1,
         timeRemaining: 20,
         isRunning: false,
@@ -83,7 +83,7 @@ describe('timerReducer', () => {
 
     test('does not resume if already running', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 1,
         timeRemaining: 20,
         isRunning: true,
@@ -96,13 +96,13 @@ describe('timerReducer', () => {
   describe('RESET action', () => {
     test('resets to ready state', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 2,
         timeRemaining: 15,
         isRunning: true,
       };
       const newState = timerReducer(state, { type: 'RESET' }, mockSettings);
-      expect(newState.phase).toBe('ready');
+      expect(newState.phase).toBe(Phase.Ready);
       expect(newState.currentRound).toBe(1);
       expect(newState.isRunning).toBe(false);
       expect(newState.timeRemaining).toBe(mockSettings.prepTime);
@@ -112,7 +112,7 @@ describe('timerReducer', () => {
   describe('TICK action', () => {
     test('decrements time remaining', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 1,
         timeRemaining: 30,
         isRunning: true,
@@ -123,55 +123,55 @@ describe('timerReducer', () => {
 
     test('transitions from prepare to exercise', () => {
       const state: TimerState = {
-        phase: 'prepare',
+        phase: Phase.Prepare,
         currentRound: 1,
         timeRemaining: 1,
         isRunning: true,
       };
       const newState = timerReducer(state, { type: 'TICK' }, mockSettings);
-      expect(newState.phase).toBe('exercise');
+      expect(newState.phase).toBe(Phase.Exercise);
       expect(newState.timeRemaining).toBe(mockSettings.exerciseTime);
     });
 
     test('transitions from exercise to rest', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 1,
         timeRemaining: 1,
         isRunning: true,
       };
       const newState = timerReducer(state, { type: 'TICK' }, mockSettings);
-      expect(newState.phase).toBe('rest');
+      expect(newState.phase).toBe(Phase.Rest);
       expect(newState.timeRemaining).toBe(mockSettings.restTime);
     });
 
     test('transitions from rest to exercise on next round', () => {
       const state: TimerState = {
-        phase: 'rest',
+        phase: Phase.Rest,
         currentRound: 1,
         timeRemaining: 1,
         isRunning: true,
       };
       const newState = timerReducer(state, { type: 'TICK' }, mockSettings);
-      expect(newState.phase).toBe('exercise');
+      expect(newState.phase).toBe(Phase.Exercise);
       expect(newState.currentRound).toBe(2);
     });
 
     test('completes workout after last round', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 3,
         timeRemaining: 1,
         isRunning: true,
       };
       const newState = timerReducer(state, { type: 'TICK' }, mockSettings);
-      expect(newState.phase).toBe('complete');
+      expect(newState.phase).toBe(Phase.Complete);
       expect(newState.isRunning).toBe(false);
     });
 
     test('does not tick if not running', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 1,
         timeRemaining: 25,
         isRunning: false,
@@ -184,7 +184,7 @@ describe('timerReducer', () => {
   describe('SYNC_SETTINGS action', () => {
     test('updates timeRemaining for ready state', () => {
       const state: TimerState = {
-        phase: 'ready',
+        phase: Phase.Ready,
         currentRound: 1,
         timeRemaining: 10,
         isRunning: false,
@@ -196,7 +196,7 @@ describe('timerReducer', () => {
 
     test('does not sync settings if timer is running', () => {
       const state: TimerState = {
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: 1,
         timeRemaining: 20,
         isRunning: true,

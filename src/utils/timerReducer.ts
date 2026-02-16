@@ -1,6 +1,12 @@
 import { WorkoutSettings } from '../App';
 
-export type Phase = 'ready' | 'prepare' | 'exercise' | 'rest' | 'complete';
+export enum Phase {
+  Ready = 'ready',
+  Prepare = 'prepare',
+  Exercise = 'exercise',
+  Rest = 'rest',
+  Complete = 'complete',
+}
 
 export type TimerState = {
   phase: Phase;
@@ -21,7 +27,7 @@ export type TimerEvent =
  * Get initial timer state with given prep time
  */
 export const getInitialTimerState = (prepTime: number): TimerState => ({
-  phase: 'ready',
+  phase: Phase.Ready,
   currentRound: 1,
   timeRemaining: prepTime,
   isRunning: false,
@@ -37,17 +43,17 @@ export const timerReducer = (
 ): TimerState => {
   switch (event.type) {
     case 'START':
-      if (currentState.phase === 'ready') {
+      if (currentState.phase === Phase.Ready) {
         return {
-          phase: 'prepare',
+          phase: Phase.Prepare,
           currentRound: 1,
           timeRemaining: settings.prepTime,
           isRunning: true,
         };
       }
-      if (currentState.phase === 'complete') {
+      if (currentState.phase === Phase.Complete) {
         return {
-          phase: 'ready',
+          phase: Phase.Ready,
           currentRound: 1,
           timeRemaining: settings.prepTime,
           isRunning: false,
@@ -64,8 +70,8 @@ export const timerReducer = (
     case 'RESUME':
       if (
         currentState.isRunning ||
-        currentState.phase === 'ready' ||
-        currentState.phase === 'complete'
+        currentState.phase === Phase.Ready ||
+        currentState.phase === Phase.Complete
       ) {
         return currentState;
       }
@@ -73,14 +79,14 @@ export const timerReducer = (
 
     case 'RESET':
       return {
-        phase: 'ready',
+        phase: Phase.Ready,
         currentRound: 1,
         timeRemaining: settings.prepTime,
         isRunning: false,
       };
 
     case 'SYNC_SETTINGS':
-      if (currentState.phase === 'ready' || currentState.phase === 'complete') {
+      if (currentState.phase === Phase.Ready || currentState.phase === Phase.Complete) {
         return {
           ...currentState,
           currentRound: 1,
@@ -92,9 +98,9 @@ export const timerReducer = (
     case 'TICK':
       if (
         !currentState.isRunning ||
-        (currentState.phase !== 'prepare' &&
-          currentState.phase !== 'exercise' &&
-          currentState.phase !== 'rest')
+        (currentState.phase !== Phase.Prepare &&
+          currentState.phase !== Phase.Exercise &&
+          currentState.phase !== Phase.Rest)
       ) {
         return currentState;
       }
@@ -103,34 +109,34 @@ export const timerReducer = (
         return { ...currentState, timeRemaining: currentState.timeRemaining - 1 };
       }
 
-      if (currentState.phase === 'prepare') {
+      if (currentState.phase === Phase.Prepare) {
         return {
           ...currentState,
-          phase: 'exercise',
+          phase: Phase.Exercise,
           timeRemaining: settings.exerciseTime,
         };
       }
 
-      if (currentState.phase === 'exercise') {
+      if (currentState.phase === Phase.Exercise) {
         if (currentState.currentRound < settings.rounds) {
           return {
             ...currentState,
-            phase: 'rest',
+            phase: Phase.Rest,
             timeRemaining: settings.restTime,
           };
         }
         return {
           ...currentState,
-          phase: 'complete',
+          phase: Phase.Complete,
           timeRemaining: 0,
           isRunning: false,
         };
       }
 
-      // phase === 'rest'
+      // phase === Phase.Rest
       return {
         ...currentState,
-        phase: 'exercise',
+        phase: Phase.Exercise,
         currentRound: currentState.currentRound + 1,
         timeRemaining: settings.exerciseTime,
       };

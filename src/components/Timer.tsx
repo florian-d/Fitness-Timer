@@ -37,7 +37,7 @@ const Timer: React.FC<TimerProps> = ({
   const previousPhaseRef = useRef<Phase | null>(null);
 
   // Keep screen awake during exercise and rest phases
-  useWakeLock((state.phase === 'exercise' || state.phase === 'rest') && state.isRunning);
+  useWakeLock((state.phase === Phase.Exercise || state.phase === Phase.Rest) && state.isRunning);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -141,13 +141,13 @@ const Timer: React.FC<TimerProps> = ({
 
   const getPhaseColor = (): string => {
     switch (state.phase) {
-      case 'prepare':
+      case Phase.Prepare:
         return '#F59E0B'; // Yellow
-      case 'exercise':
+      case Phase.Exercise:
         return '#EF4444'; // Red
-      case 'rest':
+      case Phase.Rest:
         return '#10B981'; // Green
-      case 'complete':
+      case Phase.Complete:
         return '#3B82F6'; // Blue
       default:
         return '#6B7280'; // Gray
@@ -156,15 +156,15 @@ const Timer: React.FC<TimerProps> = ({
 
   const getPhaseText = (): string => {
     switch (state.phase) {
-      case 'ready':
+      case Phase.Ready:
         return t('timer.ready');
-      case 'prepare':
+      case Phase.Prepare:
         return t('timer.prepare');
-      case 'exercise':
+      case Phase.Exercise:
         return t('timer.exercise', { current: state.currentRound, total: settings.rounds });
-      case 'rest':
+      case Phase.Rest:
         return t('timer.rest', { current: state.currentRound, total: settings.rounds });
-      case 'complete':
+      case Phase.Complete:
         return t('timer.complete');
       default:
         return '';
@@ -172,19 +172,19 @@ const Timer: React.FC<TimerProps> = ({
   };
 
   useEffect(() => {
-    if (previousPhaseRef.current && previousPhaseRef.current !== state.phase && state.phase !== 'ready') {
+    if (previousPhaseRef.current && previousPhaseRef.current !== state.phase && state.phase !== Phase.Ready) {
       // Play double bell when transitioning to exercise (from prepare or rest)
-      if (state.phase === 'exercise') {
+      if (state.phase === Phase.Exercise) {
         playDoubleBell();
       } else {
         playSingleBell();
       }
 
       // Track workout events in Matomo
-      if (previousPhaseRef.current === 'ready' && state.phase === 'prepare') {
+      if (previousPhaseRef.current === Phase.Ready && state.phase === Phase.Prepare) {
         trackEvent('Workout', 'Started', `${settings.rounds} rounds`);
       }
-      if (state.phase === 'complete') {
+      if (state.phase === Phase.Complete) {
         trackEvent('Workout', 'Completed', `${settings.rounds} rounds`);
       }
     }
@@ -192,7 +192,7 @@ const Timer: React.FC<TimerProps> = ({
   }, [state.phase, playSingleBell, playDoubleBell, settings.rounds]);
 
   useEffect(() => {
-    if (state.isRunning && state.phase !== 'ready' && state.phase !== 'complete') {
+    if (state.isRunning && state.phase !== Phase.Ready && state.phase !== Phase.Complete) {
       intervalRef.current = setInterval(() => {
         dispatch({ type: 'TICK' });
       }, 1000);
@@ -218,7 +218,7 @@ const Timer: React.FC<TimerProps> = ({
 
   const handleStartPause = () => {
     unlockAudio();
-    if (state.phase === 'ready' || state.phase === 'complete') {
+    if (state.phase === Phase.Ready || state.phase === Phase.Complete) {
       dispatch({ type: 'START' });
       return;
     }
@@ -237,7 +237,7 @@ const Timer: React.FC<TimerProps> = ({
     <div className="timer-container" style={{ backgroundColor: getPhaseColor() }}>
       <div className="timer-content">
         {/* Preset: dropdown before training, read-only label during training */}
-        {state.phase === 'ready' && presets.length > 1 ? (
+        {state.phase === Phase.Ready && presets.length > 1 ? (
           <div className="preset-selector">
             <select
               id="preset-select"
@@ -258,17 +258,17 @@ const Timer: React.FC<TimerProps> = ({
 
         <div className="phase-text">{getPhaseText()}</div>
         <div className="timer-display">
-          {state.phase === 'ready' ? t('timer.tapToStart') : formatTime(state.timeRemaining)}
+          {state.phase === Phase.Ready ? t('timer.tapToStart') : formatTime(state.timeRemaining)}
         </div>
         <div className="controls">
           <button
             className="control-button start-pause-button"
             onClick={handleStartPause}
-            aria-label={state.phase === 'ready' ? 'Start' : state.isRunning ? 'Pause' : 'Resume'}
+            aria-label={state.phase === Phase.Ready ? 'Start' : state.isRunning ? 'Pause' : 'Resume'}
           >
-            {state.phase === 'ready' || state.phase === 'complete' ? <PlayIcon /> : state.isRunning ? <PauseIcon /> : <PlayIcon />}
+            {state.phase === Phase.Ready || state.phase === Phase.Complete ? <PlayIcon /> : state.isRunning ? <PauseIcon /> : <PlayIcon />}
           </button>
-          {state.phase !== 'ready' && state.phase !== 'complete' && (
+          {state.phase !== Phase.Ready && state.phase !== Phase.Complete && (
             <button
               className="control-button reset-button"
               onClick={handleReset}
