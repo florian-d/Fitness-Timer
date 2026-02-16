@@ -18,6 +18,24 @@ HIIT workout timer web application built with React, featuring customizable exer
 - **Benefits:** Type-safe phase comparisons, better IDE support
 - **Enum Values:** Ready, Prepare, Exercise, Rest, Complete
 
+### Test Preset for Quick Testing
+For efficient testing and Playwright E2E tests, use the **Test Preset** with short intervals:
+
+```typescript
+TEST_PRESET_SETTINGS = {
+  rounds: 2,
+  exerciseTime: 5 seconds,
+  restTime: 2 seconds,
+  prepTime: 1 second,
+}
+```
+
+**Benefits:**
+- ✅ Complete timer cycle in ~14 seconds (vs ~5 minutes with default)
+- ✅ Allows testing all phase transitions quickly
+- ✅ Perfect for E2E tests and manual validation
+- ✅ Defined in `src/utils/presetStorage.ts` as `TEST_PRESET_SETTINGS`
+
 ## Validation Process for All Changes
 
 **⚠️ CRITICAL: Every code change must pass ALL validation steps before committing.**
@@ -60,8 +78,15 @@ For UI-critical changes, validate the app runs correctly:
 2. **Test with Playwright:**
    - Navigate to `http://localhost:3000`
    - Verify app loads without errors
-   - For timer changes: Test phase transitions (Ready → Prepare → Exercise → Rest → Complete)
+   - **For timer changes:** Use the **Test Preset** (if available in UI) for quick testing:
+     - Prepare: 1 second
+     - Exercise: 5 seconds
+     - Rest: 2 seconds
+     - Complete cycle: ~14 seconds total
+   - Test all phase transitions quickly (Ready → Prepare → Exercise → Rest → Complete)
    - For UI changes: Verify visual correctness
+
+**Pro Tip:** The Test Preset is automatically used in Playwright E2E tests for fast validation.
 
 ---
 

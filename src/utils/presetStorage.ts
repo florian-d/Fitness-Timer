@@ -11,6 +11,17 @@ export const DEFAULT_SETTINGS: WorkoutSettings = {
 };
 
 /**
+ * Test preset with short intervals for E2E testing and manual testing
+ * Allows quick validation of timer functionality without waiting long periods
+ */
+export const TEST_PRESET_SETTINGS: WorkoutSettings = {
+  rounds: 2,
+  exerciseTime: 5,
+  restTime: 2,
+  prepTime: 1,
+};
+
+/**
  * Check if localStorage is available and accessible
  */
 export const isLocalStorageAvailable = (): boolean => {
