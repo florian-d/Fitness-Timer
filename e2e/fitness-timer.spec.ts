@@ -1,14 +1,45 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Fitness Timer E2E', () => {
+/**
+ * Test preset with short intervals for quick E2E testing
+ * - Exercise: 5 seconds
+ * - Rest: 2 seconds
+ * - Prepare: 1 second
+ * - Rounds: 2
+ */
+const TEST_PRESET = {
+  rounds: 2,
+  exerciseTime: 5,
+  restTime: 2,
+  prepTime: 1,
+};
+
+test.describe('Fitness Timer E2E - Mobile (iPhone 12)', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3000');
+    // Set up test preset with short intervals before navigating
+    await page.addInitScript(({ preset }) => {
+      const store = {
+        activePresetId: 'test-preset-id',
+        presets: [
+          {
+            id: 'test-preset-id',
+            name: 'Test Workout',
+            settings: preset,
+            createdAt: Date.now(),
+          },
+        ],
+        version: 1,
+      };
+      localStorage.setItem('fitnessTimerPresets', JSON.stringify(store));
+    }, { preset: TEST_PRESET });
+
+    await page.goto('/');
     await page.waitForTimeout(500);
   });
 
-  test('App loads with Default preset', async ({ page }) => {
-    // Check that the app displays Default preset
-    const presetName = page.locator('text=Default');
+  test('App loads with Test preset', async ({ page }) => {
+    // Check that the app displays Test preset
+    const presetName = page.locator('text=Test Workout');
     await expect(presetName).toBeVisible();
 
     // Check that timer is in ready state
@@ -69,11 +100,23 @@ test.describe('Fitness Timer E2E', () => {
     // Start timer
     await page.locator('[aria-label="Start timer"]').click();
 
-    // Should be in prepare phase
-    let phaseLabel = page.locator('text=Prepare');
+    // Should be in prepare phase (prepTime: 1 second)
+    let phaseLabel = page.locator('text=GET READY');
     await expect(phaseLabel).toBeVisible();
 
-    // Reset (we don't wait for full cycle in E2E)
+    // Wait for prepare to complete and exercise to start (exerciseTime: 5 seconds)
+    phaseLabel = page.locator('text=EXERCISE');
+    await expect(phaseLabel).toBeVisible({ timeout: 3000 });
+
+    // Wait for exercise to complete and rest to start (restTime: 2 seconds)
+    phaseLabel = page.locator('text=REST');
+    await expect(phaseLabel).toBeVisible({ timeout: 8000 });
+
+    // Verify we're in rest phase with correct round number
+    const restText = page.locator('text=REST - Round 1');
+    await expect(restText).toBeVisible();
+
+    // Reset to clean up
     await page.locator('[aria-label="Reset timer"]').click();
 
     // Should be back to ready
