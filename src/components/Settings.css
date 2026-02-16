@@ -499,3 +499,48 @@
     padding: 10px;
   }
 }
+
+.color-pickers-section {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.color-pickers-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #374151;
+}
+
+.color-picker-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.color-picker-item label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4B5563;
+}
+
+.color-picker-item input[type="color"] {
+  width: 60px;
+  height: 40px;
+  border: 2px solid #D1D5DB;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 2px;
+  background: white;
+}
+
+.color-picker-item input[type="color"]:hover {
+  border-color: #9CA3AF;
+}
+
+.color-picker-item input[type="color"]:focus {
+  outline: none;
+  border-color: #6366F1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}

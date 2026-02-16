@@ -20,7 +20,12 @@
     "summary": "Workout Summary",
     "totalTime": "Total Time: {{minutes}} minutes",
     "save": "Save",
-    "language": "Language"
+    "language": "Language",
+    "phaseColors": "Phase Colors",
+    "readyColor": "Ready Color",
+    "prepareColor": "Prepare Color",
+    "exerciseColor": "Exercise Color",
+    "restColor": "Rest Color"
   },
   "presets": {
     "title": "Workout Presets",

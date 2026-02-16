@@ -20,7 +20,12 @@
     "summary": "Workout-Zusammenfassung",
     "totalTime": "Gesamtzeit: {{minutes}} Minuten",
     "save": "Speichern",
-    "language": "Sprache"
+    "language": "Sprache",
+    "phaseColors": "Phasenfarben",
+    "readyColor": "Bereit-Farbe",
+    "prepareColor": "Vorbereitung-Farbe",
+    "exerciseColor": "Training-Farbe",
+    "restColor": "Pause-Farbe"
   },
   "presets": {
     "title": "Workout-Presets",
