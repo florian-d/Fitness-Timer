@@ -80,15 +80,33 @@ npm test -- --watchAll=false  # Run once
 Tests: 149 passing | Location: `src/**/*.test.ts(x)`
 
 ### E2E Tests (Playwright)
+
+**Automated (CI/CD):**
 ```bash
-npm run e2e          # Headless
-npm run e2e:ui       # Interactive UI
+npm run e2e          # Headless (iPhone 12 viewport)
+npm run e2e:ui       # Interactive UI mode
 npm run e2e:debug    # Debug mode
 ```
+
+**Manual Testing via Playwright MCP:**
+```bash
+# 1. Start the app
+npm start
+
+# 2. Use Playwright MCP for interactive testing
+# - browser_navigate: Go to URL
+# - browser_click: Click elements
+# - browser_wait_for: Wait for state
+# - browser_snapshot: Inspect page
+# - browser_close: Close browser
+```
+
+**Configuration:**
 - **Viewport:** iPhone 12 (390x844) - Mobile-first
 - **Browsers:** Chromium, Firefox, WebKit (all mobile)
 - **Config:** `playwright.config.ts`
 - **Tests:** `e2e/fitness-timer.spec.ts`
+- **Report:** `PLAYWRIGHT_TEST_REPORT.md`
 
 ---
 
@@ -123,6 +141,21 @@ npm run e2e:ui           # Playwright UI
 
 ---
 
+## Testing Workflow with Playwright MCP
+
+**Before Committing Feature:**
+1. **Unit Tests** (required): `npm test -- --watchAll=false`
+2. **Build Check** (required): `npm run build`
+3. **E2E Tests** (recommended):
+   - Option A: `npm run e2e` (automated)
+   - Option B: Manual via Playwright MCP:
+     - `npm start` (in one terminal)
+     - Use Playwright MCP (browser_navigate, browser_click, etc.)
+     - Verify: App loads → Features work → No console errors
+4. **Document** findings in PR description
+
+---
+
 ## Git Quick Start
 
 ```bash
@@ -131,6 +164,7 @@ git checkout main && git pull
 git checkout -b feat/my-feature
 # ... code ...
 npm run build && npm test -- --watchAll=false
+# Optional: npm run e2e OR manual Playwright testing
 git add . && git commit -m "feat: description"
 git push -u origin feat/my-feature
 
