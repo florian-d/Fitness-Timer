@@ -549,7 +549,7 @@ describe('Timer Component', () => {
       });
     });
 
-    test('releases wake lock during rest phase', async () => {
+    test('keeps wake lock active during rest phase', async () => {
       renderTimer();
       const startButton = screen.getByLabelText(/start/i);
       fireEvent.click(startButton);
@@ -561,6 +561,9 @@ describe('Timer Component', () => {
         expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
+      // Wait for wake lock to be requested during exercise
+      const exerciseCallCount = mockWakeLockRequest.mock.calls.length;
+
       // Advance through exercise time to rest
       advanceTime(3000);
 
@@ -568,10 +571,11 @@ describe('Timer Component', () => {
         expect(screen.getByText('timer.rest')).toBeInTheDocument();
       });
 
-      // Wake lock should be released during rest
-      await waitFor(() => {
-        expect(mockWakeLockRelease).toHaveBeenCalled();
-      });
+      // Wake lock should remain active (not released) during rest
+      // The release method should not be called
+      expect(mockWakeLockRelease).not.toHaveBeenCalled();
+      // Wake lock request should still be in effect (same count as before entering rest)
+      expect(mockWakeLockRequest.mock.calls.length).toBeGreaterThanOrEqual(exerciseCallCount);
     });
 
     test('releases wake lock when paused during exercise', async () => {
