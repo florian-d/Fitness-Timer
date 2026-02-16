@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WorkoutSettings, PresetStore } from '../App';
 import { BackIcon, CloseIcon, EditIcon, TrashIcon, CheckIcon } from '../utils/icons';
+import NumericInput from './NumericInput';
 import './Settings.css';
 
 interface SettingsProps {
@@ -148,112 +149,44 @@ const Settings: React.FC<SettingsProps> = ({
         </div>
 
         <div className="settings-content">
-          <div className="setting-item">
-            <label htmlFor="rounds">{t('settings.rounds')}</label>
-            <div className="input-group">
-              <button
-                onClick={() => setRounds(Math.max(1, rounds - 1))}
-                aria-label="Decrease rounds"
-              >
-                −
-              </button>
-              <input
-                id="rounds"
-                type="number"
-                min="1"
-                max="50"
-                value={rounds}
-                onChange={(e) => setRounds(Math.max(1, parseInt(e.target.value) || 1))}
-              />
-              <button
-                onClick={() => setRounds(Math.min(50, rounds + 1))}
-                aria-label="Increase rounds"
-              >
-                +
-              </button>
-            </div>
-          </div>
+          <NumericInput
+            label={t('settings.rounds') as string}
+            value={rounds}
+            min={1}
+            max={50}
+            onChange={setRounds}
+            inputId="rounds"
+          />
 
-          <div className="setting-item">
-            <label htmlFor="exercise-time">{t('settings.exerciseTime')}</label>
-            <div className="input-group">
-              <button
-                onClick={() => setExerciseTime(Math.max(5, exerciseTime - 5))}
-                aria-label="Decrease exercise time"
-              >
-                −
-              </button>
-              <input
-                id="exercise-time"
-                type="number"
-                min="5"
-                max="600"
-                step="5"
-                value={exerciseTime}
-                onChange={(e) => setExerciseTime(Math.max(5, parseInt(e.target.value) || 5))}
-              />
-              <button
-                onClick={() => setExerciseTime(Math.min(600, exerciseTime + 5))}
-                aria-label="Increase exercise time"
-              >
-                +
-              </button>
-            </div>
-          </div>
+          <NumericInput
+            label={t('settings.exerciseTime') as string}
+            value={exerciseTime}
+            min={5}
+            max={600}
+            step={5}
+            onChange={setExerciseTime}
+            inputId="exercise-time"
+          />
 
-          <div className="setting-item">
-            <label htmlFor="rest-time">{t('settings.restTime')}</label>
-            <div className="input-group">
-              <button
-                onClick={() => setRestTime(Math.max(5, restTime - 5))}
-                aria-label="Decrease rest time"
-              >
-                −
-              </button>
-              <input
-                id="rest-time"
-                type="number"
-                min="5"
-                max="300"
-                step="5"
-                value={restTime}
-                onChange={(e) => setRestTime(Math.max(5, parseInt(e.target.value) || 5))}
-              />
-              <button
-                onClick={() => setRestTime(Math.min(300, restTime + 5))}
-                aria-label="Increase rest time"
-              >
-                +
-              </button>
-            </div>
-          </div>
+          <NumericInput
+            label={t('settings.restTime') as string}
+            value={restTime}
+            min={5}
+            max={300}
+            step={5}
+            onChange={setRestTime}
+            inputId="rest-time"
+          />
 
-          <div className="setting-item">
-            <label htmlFor="prep-time">{t('settings.prepTime')}</label>
-            <div className="input-group">
-              <button
-                onClick={() => setPrepTime(Math.max(3, prepTime - 1))}
-                aria-label="Decrease preparation time"
-              >
-                −
-              </button>
-              <input
-                id="prep-time"
-                type="number"
-                min="3"
-                max="30"
-                step="1"
-                value={prepTime}
-                onChange={(e) => setPrepTime(Math.max(3, parseInt(e.target.value) || 3))}
-              />
-              <button
-                onClick={() => setPrepTime(Math.min(30, prepTime + 1))}
-                aria-label="Increase preparation time"
-              >
-                +
-              </button>
-            </div>
-          </div>
+          <NumericInput
+            label={t('settings.prepTime') as string}
+            value={prepTime}
+            min={3}
+            max={30}
+            step={1}
+            onChange={setPrepTime}
+            inputId="prep-time"
+          />
 
           <div className="settings-summary">
             <h3>{t('settings.summary')}</h3>

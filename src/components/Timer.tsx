@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { WorkoutSettings, WorkoutPreset } from '../App';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { trackEvent } from '../utils/analytics';
+import { timerReducer, getInitialTimerState, TimerState, TimerEvent, Phase } from '../utils/timerReducer';
 import { PlayIcon, PauseIcon, ResetIcon } from '../utils/icons';
 import './Timer.css';
 
@@ -15,23 +16,6 @@ interface TimerProps {
   onPresetChange: (presetId: string) => void;
 }
 
-type Phase = 'ready' | 'prepare' | 'exercise' | 'rest' | 'complete';
-
-type TimerState = {
-  phase: Phase;
-  currentRound: number;
-  timeRemaining: number;
-  isRunning: boolean;
-};
-
-type TimerEvent =
-  | { type: 'START' }
-  | { type: 'PAUSE' }
-  | { type: 'RESUME' }
-  | { type: 'RESET' }
-  | { type: 'TICK' }
-  | { type: 'SYNC_SETTINGS' };
-
 const Timer: React.FC<TimerProps> = ({
   settings,
   activePresetName,
@@ -42,98 +26,10 @@ const Timer: React.FC<TimerProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const reducer = (currentState: TimerState, event: TimerEvent): TimerState => {
-    switch (event.type) {
-      case 'START':
-        if (currentState.phase === 'ready') {
-          return {
-            phase: 'prepare',
-            currentRound: 1,
-            timeRemaining: settings.prepTime,
-            isRunning: true,
-          };
-        }
-        if (currentState.phase === 'complete') {
-          return {
-            phase: 'ready',
-            currentRound: 1,
-            timeRemaining: settings.prepTime,
-            isRunning: false,
-          };
-        }
-        return currentState;
-      case 'PAUSE':
-        if (!currentState.isRunning) {
-          return currentState;
-        }
-        return { ...currentState, isRunning: false };
-      case 'RESUME':
-        if (currentState.isRunning || currentState.phase === 'ready' || currentState.phase === 'complete') {
-          return currentState;
-        }
-        return { ...currentState, isRunning: true };
-      case 'RESET':
-        return {
-          phase: 'ready',
-          currentRound: 1,
-          timeRemaining: settings.prepTime,
-          isRunning: false,
-        };
-      case 'SYNC_SETTINGS':
-        if (currentState.phase === 'ready' || currentState.phase === 'complete') {
-          return {
-            ...currentState,
-            currentRound: 1,
-            timeRemaining: settings.prepTime,
-          };
-        }
-        return currentState;
-      case 'TICK':
-        if (!currentState.isRunning || (currentState.phase !== 'prepare' && currentState.phase !== 'exercise' && currentState.phase !== 'rest')) {
-          return currentState;
-        }
-        if (currentState.timeRemaining > 1) {
-          return { ...currentState, timeRemaining: currentState.timeRemaining - 1 };
-        }
-        if (currentState.phase === 'prepare') {
-          return {
-            ...currentState,
-            phase: 'exercise',
-            timeRemaining: settings.exerciseTime,
-          };
-        }
-        if (currentState.phase === 'exercise') {
-          if (currentState.currentRound < settings.rounds) {
-            return {
-              ...currentState,
-              phase: 'rest',
-              timeRemaining: settings.restTime,
-            };
-          }
-          return {
-            ...currentState,
-            phase: 'complete',
-            timeRemaining: 0,
-            isRunning: false,
-          };
-        }
-        return {
-          ...currentState,
-          phase: 'exercise',
-          currentRound: currentState.currentRound + 1,
-          timeRemaining: settings.exerciseTime,
-        };
-      default:
-        return currentState;
-    }
-  };
-
-  const [state, dispatch] = useReducer(reducer, {
-    phase: 'ready',
-    currentRound: 1,
-    timeRemaining: settings.prepTime,
-    isRunning: false,
-  });
+  const [state, dispatch] = useReducer(
+    (s: TimerState, e: TimerEvent) => timerReducer(s, e, settings),
+    getInitialTimerState(settings.prepTime)
+  );
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const doubleBellAudioRef = useRef<HTMLAudioElement | null>(null);
