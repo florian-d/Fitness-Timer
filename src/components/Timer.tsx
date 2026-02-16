@@ -279,6 +279,20 @@ const Timer: React.FC<TimerProps> = ({
 
   return (
     <div className="timer-container" style={{ backgroundColor: getPhaseColor() }}>
+      {/* Info areas - visible only during training */}
+      {(state.phase === Phase.Prepare ||
+        state.phase === Phase.Exercise ||
+        state.phase === Phase.Rest) && (
+        <>
+          <div className="info-top">
+            {t('timer.totalRemaining', { time: formatTime(calculateTotalRemainingTime(state, settings)) })}
+          </div>
+          <div className="info-bottom">
+            {t('timer.roundInfo', { current: state.currentRound, total: settings.rounds })}
+          </div>
+        </>
+      )}
+
       <div className="timer-content">
         {/* Preset: dropdown before training, read-only label during training */}
         {state.phase === Phase.Ready && presets.length > 1 ? (

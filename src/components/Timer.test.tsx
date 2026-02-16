@@ -880,4 +880,103 @@ describe('Timer Component', () => {
       expect(calculateTotalRemainingTime(state, settings)).toBe(111);
     });
   });
+
+  describe('Info Areas Visibility', () => {
+    test('Info areas are NOT rendered in Ready phase', () => {
+      renderTimer();
+
+      // Verify we're in Ready phase
+      expect(screen.getByText('timer.ready')).toBeInTheDocument();
+
+      // Info areas should not be present
+      expect(screen.queryByText(/timer.totalRemaining/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/timer.roundInfo/)).not.toBeInTheDocument();
+    });
+
+    test('Info areas are NOT rendered in Complete phase', async () => {
+      renderTimer();
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      // Advance through all rounds to Complete
+      advanceTime(2000); // Prepare
+      advanceTime(3000); // Round 1 exercise
+      advanceTime(2000); // Round 1 rest
+      advanceTime(3000); // Round 2 exercise
+
+      await waitFor(() => {
+        expect(screen.getByText('timer.complete')).toBeInTheDocument();
+      });
+
+      // Info areas should not be present in Complete phase
+      expect(screen.queryByText(/timer.totalRemaining/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/timer.roundInfo/)).not.toBeInTheDocument();
+    });
+
+    test('Info areas ARE rendered in Prepare phase', async () => {
+      renderTimer();
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('timer.prepare')).toBeInTheDocument();
+      });
+
+      // Info areas should be visible
+      expect(screen.getByText(/timer.totalRemaining/)).toBeInTheDocument();
+      expect(screen.getByText(/timer.roundInfo/)).toBeInTheDocument();
+    });
+
+    test('Info areas ARE rendered in Exercise phase', async () => {
+      renderTimer();
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      // Advance through prepare to exercise
+      advanceTime(2000);
+
+      await waitFor(() => {
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
+      });
+
+      // Info areas should be visible
+      expect(screen.getByText(/timer.totalRemaining/)).toBeInTheDocument();
+      expect(screen.getByText(/timer.roundInfo/)).toBeInTheDocument();
+    });
+
+    test('Info areas ARE rendered in Rest phase', async () => {
+      renderTimer();
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      // Advance through prepare and exercise to rest
+      advanceTime(2000);
+      advanceTime(3000);
+
+      await waitFor(() => {
+        expect(screen.getByText('timer.rest')).toBeInTheDocument();
+      });
+
+      // Info areas should be visible
+      expect(screen.getByText(/timer.totalRemaining/)).toBeInTheDocument();
+      expect(screen.getByText(/timer.roundInfo/)).toBeInTheDocument();
+    });
+
+    test('Info areas display correct round information', async () => {
+      const customSettings = { ...mockSettings, rounds: 5 };
+      renderTimer(customSettings);
+      const startButton = screen.getByLabelText(/start/i);
+      fireEvent.click(startButton);
+
+      // Advance to exercise phase (round 1)
+      advanceTime(2000);
+
+      await waitFor(() => {
+        expect(screen.getByText('timer.exercise')).toBeInTheDocument();
+      });
+
+      // Should show "Round 1 of 5"
+      expect(screen.getByText(/timer.roundInfo/)).toBeInTheDocument();
+    });
+  });
 });
