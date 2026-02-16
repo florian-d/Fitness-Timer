@@ -14,6 +14,7 @@ import {
   deletePreset,
   setActivePreset,
 } from './localStorage';
+import { DEFAULT_PHASE_COLORS } from './constants';
 
 describe('localStorage utilities', () => {
   let store: Record<string, string> = {};
@@ -281,7 +282,11 @@ describe('localStorage utilities', () => {
 
         expect(presetStore.presets).toHaveLength(1);
         expect(presetStore.presets[0].name).toBe(DEFAULT_PRESET_NAME);
-        expect(presetStore.presets[0].settings).toEqual(legacySettings);
+        // Legacy settings should be migrated with phaseColors added
+        expect(presetStore.presets[0].settings).toEqual({
+          ...legacySettings,
+          phaseColors: DEFAULT_SETTINGS.phaseColors,
+        });
         expect(store['fitnessTimerSettings']).toBeUndefined(); // Legacy key removed
         expect(store['fitnessTimerPresets']).toBeDefined(); // New format saved
       });
@@ -310,7 +315,13 @@ describe('localStorage utilities', () => {
             {
               id: 'preset-1',
               name: 'HIIT',
-              settings: { rounds: 10, exerciseTime: 20, restTime: 10, prepTime: 5 },
+              settings: {
+                rounds: 10,
+                exerciseTime: 20,
+                restTime: 10,
+                prepTime: 5,
+                phaseColors: DEFAULT_SETTINGS.phaseColors,
+              },
               createdAt: Date.now(),
             },
           ],
@@ -685,6 +696,82 @@ describe('localStorage utilities', () => {
 
         expect(result).not.toBeNull();
         expect(result!.activePresetId).toBe('preset-1');
+      });
+    });
+
+    describe('loadPresetStore with phaseColors migration', () => {
+      beforeEach(() => {
+        store = {};
+      });
+
+      it('should migrate presets without phaseColors to include default colors', () => {
+        // Simulate old preset format (no phaseColors)
+        const oldPreset = {
+          id: 'preset_old',
+          name: 'Old Preset',
+          settings: {
+            rounds: 5,
+            exerciseTime: 20,
+            restTime: 10,
+            prepTime: 10,
+            // No phaseColors
+          },
+          createdAt: 1234567890,
+        };
+
+        const oldStore = {
+          activePresetId: 'preset_old',
+          presets: [oldPreset],
+          version: 1,
+        };
+
+        store['fitnessTimerPresets'] = JSON.stringify(oldStore);
+
+        const result = loadPresetStore();
+
+        expect(result.presets[0].settings.phaseColors).toEqual({
+          ready: DEFAULT_PHASE_COLORS.ready,
+          prepare: DEFAULT_PHASE_COLORS.prepare,
+          exercise: DEFAULT_PHASE_COLORS.exercise,
+          rest: DEFAULT_PHASE_COLORS.rest,
+        });
+      });
+
+      it('should not modify presets that already have phaseColors', () => {
+        const newPreset = {
+          id: 'preset_new',
+          name: 'New Preset',
+          settings: {
+            rounds: 5,
+            exerciseTime: 20,
+            restTime: 10,
+            prepTime: 10,
+            phaseColors: {
+              ready: '#FF0000',
+              prepare: '#00FF00',
+              exercise: '#0000FF',
+              rest: '#FFFF00',
+            },
+          },
+          createdAt: 1234567890,
+        };
+
+        const newStore = {
+          activePresetId: 'preset_new',
+          presets: [newPreset],
+          version: 1,
+        };
+
+        store['fitnessTimerPresets'] = JSON.stringify(newStore);
+
+        const result = loadPresetStore();
+
+        expect(result.presets[0].settings.phaseColors).toEqual({
+          ready: '#FF0000',
+          prepare: '#00FF00',
+          exercise: '#0000FF',
+          rest: '#FFFF00',
+        });
       });
     });
   });

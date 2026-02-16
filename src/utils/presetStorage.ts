@@ -59,6 +59,27 @@ const generatePresetId = (): string => {
 };
 
 /**
+ * Migrate a preset to include phaseColors if missing
+ */
+const migratePresetColors = (preset: WorkoutPreset): WorkoutPreset => {
+  if (!preset.settings.phaseColors) {
+    return {
+      ...preset,
+      settings: {
+        ...preset.settings,
+        phaseColors: {
+          ready: DEFAULT_PHASE_COLORS.ready,
+          prepare: DEFAULT_PHASE_COLORS.prepare,
+          exercise: DEFAULT_PHASE_COLORS.exercise,
+          rest: DEFAULT_PHASE_COLORS.rest,
+        },
+      },
+    };
+  }
+  return preset;
+};
+
+/**
  * Create a default preset with the given settings
  */
 const createDefaultPreset = (settings: WorkoutSettings = DEFAULT_SETTINGS): WorkoutPreset => ({
@@ -88,10 +109,17 @@ export const loadPresetStore = (): PresetStore => {
     if (presetsJson) {
       const store: PresetStore = JSON.parse(presetsJson);
       if (store.presets && Array.isArray(store.presets) && store.presets.length > 0) {
+        // Migrate all presets to include phaseColors
+        const migratedPresets = store.presets.map(migratePresetColors);
+
         if (!store.presets.find(p => p.id === store.activePresetId)) {
-          store.activePresetId = store.presets[0].id;
+          store.activePresetId = migratedPresets[0].id;
         }
-        return store;
+
+        return {
+          ...store,
+          presets: migratedPresets,
+        };
       }
     }
 
