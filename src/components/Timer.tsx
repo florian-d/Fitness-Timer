@@ -5,6 +5,7 @@ import { useWakeLock } from '../hooks/useWakeLock';
 import { trackEvent } from '../utils/analytics';
 import { timerReducer, getInitialTimerState, TimerState, TimerEvent, Phase } from '../utils/timerReducer';
 import { PlayIcon, PauseIcon, ResetIcon } from '../utils/icons';
+import { DEFAULT_PHASE_COLORS } from '../utils/constants';
 import './Timer.css';
 
 interface TimerProps {
@@ -217,16 +218,18 @@ const Timer: React.FC<TimerProps> = ({
 
   const getPhaseColor = (): string => {
     switch (state.phase) {
+      case Phase.Ready:
+        return settings.phaseColors.ready;
       case Phase.Prepare:
-        return '#F59E0B'; // Yellow
+        return settings.phaseColors.prepare;
       case Phase.Exercise:
-        return '#EF4444'; // Red
+        return settings.phaseColors.exercise;
       case Phase.Rest:
-        return '#10B981'; // Green
+        return settings.phaseColors.rest;
       case Phase.Complete:
-        return '#3B82F6'; // Blue
+        return DEFAULT_PHASE_COLORS.complete;
       default:
-        return '#6B7280'; // Gray
+        return DEFAULT_PHASE_COLORS.ready;
     }
   };
 

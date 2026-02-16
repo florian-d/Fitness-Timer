@@ -3,12 +3,19 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import Timer, { calculateTotalRemainingTime, calculateExerciseTimeRemaining } from './Timer';
 import { WorkoutSettings, WorkoutPreset } from '../App';
 import { Phase } from '../utils/timerReducer';
+import { DEFAULT_PHASE_COLORS } from '../utils/constants';
 
 const mockSettings: WorkoutSettings = {
   rounds: 2,
   exerciseTime: 3,
   restTime: 2,
   prepTime: 2,
+  phaseColors: {
+    ready: DEFAULT_PHASE_COLORS.ready,
+    prepare: DEFAULT_PHASE_COLORS.prepare,
+    exercise: DEFAULT_PHASE_COLORS.exercise,
+    rest: DEFAULT_PHASE_COLORS.rest,
+  },
 };
 
 const mockPresets: WorkoutPreset[] = [
