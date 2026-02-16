@@ -8,6 +8,7 @@
     "tapToStart": "TIPPEN ZUM STARTEN",
     "preset": "Preset wählen",
     "totalRemaining": "Noch {{time}}",
+    "exerciseRemaining": "Belastung: {{time}}",
     "roundInfo": "Runde {{current}} von {{total}}"
   },
   "settings": {

@@ -60,6 +60,38 @@ export const calculateTotalRemainingTime = (
   return remaining;
 };
 
+/**
+ * Calculate remaining exercise time only (excluding rest periods)
+ * Shows how much "work" time is left in the workout
+ */
+export const calculateExerciseTimeRemaining = (
+  state: TimerState,
+  settings: WorkoutSettings
+): number => {
+  const { phase, currentRound, timeRemaining } = state;
+  const { rounds, exerciseTime } = settings;
+
+  // In Ready or Complete phase, no exercise time remaining
+  if (phase === Phase.Ready || phase === Phase.Complete) {
+    return 0;
+  }
+
+  const remainingRounds = rounds - currentRound;
+
+  if (phase === Phase.Prepare) {
+    // All rounds including current round
+    return (remainingRounds + 1) * exerciseTime;
+  } else if (phase === Phase.Exercise) {
+    // Current phase time + remaining rounds
+    return timeRemaining + remainingRounds * exerciseTime;
+  } else if (phase === Phase.Rest) {
+    // Only remaining rounds (current round's exercise is done)
+    return remainingRounds * exerciseTime;
+  }
+
+  return 0;
+};
+
 const Timer: React.FC<TimerProps> = ({
   settings,
   activePresetName,
@@ -288,7 +320,7 @@ const Timer: React.FC<TimerProps> = ({
             {t('timer.totalRemaining', { time: formatTime(calculateTotalRemainingTime(state, settings)) })}
           </div>
           <div className="info-bottom">
-            {t('timer.roundInfo', { current: state.currentRound, total: settings.rounds })}
+            {t('timer.exerciseRemaining', { time: formatTime(calculateExerciseTimeRemaining(state, settings)) })}
           </div>
         </>
       )}

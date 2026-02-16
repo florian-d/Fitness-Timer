@@ -8,6 +8,7 @@
     "tapToStart": "TAP TO START",
     "preset": "Select Preset",
     "totalRemaining": "{{time}} remaining",
+    "exerciseRemaining": "Exercise: {{time}}",
     "roundInfo": "Round {{current}} of {{total}}"
   },
   "settings": {

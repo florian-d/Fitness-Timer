@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import Timer, { calculateTotalRemainingTime } from './Timer';
+import Timer, { calculateTotalRemainingTime, calculateExerciseTimeRemaining } from './Timer';
 import { WorkoutSettings, WorkoutPreset } from '../App';
 import { Phase } from '../utils/timerReducer';
 
@@ -881,6 +881,169 @@ describe('Timer Component', () => {
     });
   });
 
+  describe('calculateExerciseTimeRemaining', () => {
+    test('Ready phase: returns 0', () => {
+      const state = {
+        phase: Phase.Ready,
+        currentRound: 1,
+        timeRemaining: 10,
+        isRunning: false
+      };
+      const settings = {
+        rounds: 8,
+        exerciseTime: 30,
+        restTime: 10,
+        prepTime: 5
+      };
+
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(0);
+    });
+
+    test('Complete phase: returns 0', () => {
+      const state = {
+        phase: Phase.Complete,
+        currentRound: 8,
+        timeRemaining: 0,
+        isRunning: false
+      };
+      const settings = {
+        rounds: 8,
+        exerciseTime: 30,
+        restTime: 10,
+        prepTime: 5
+      };
+
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(0);
+    });
+
+    test('Prepare phase, Round 1: returns all exercise rounds', () => {
+      const state = {
+        phase: Phase.Prepare,
+        currentRound: 1,
+        timeRemaining: 5,
+        isRunning: true
+      };
+      const settings = {
+        rounds: 8,
+        exerciseTime: 30,
+        restTime: 10,
+        prepTime: 5
+      };
+
+      // Expected: 8 rounds × 30s = 240s
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(240);
+    });
+
+    test('Exercise phase, Round 1: returns current + remaining rounds', () => {
+      const state = {
+        phase: Phase.Exercise,
+        currentRound: 1,
+        timeRemaining: 25,
+        isRunning: true
+      };
+      const settings = {
+        rounds: 8,
+        exerciseTime: 30,
+        restTime: 10,
+        prepTime: 5
+      };
+
+      // Expected: 25 (current) + (7 × 30) = 25 + 210 = 235s
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(235);
+    });
+
+    test('Exercise phase, Round 2: returns current + remaining rounds', () => {
+      const state = {
+        phase: Phase.Exercise,
+        currentRound: 2,
+        timeRemaining: 15,
+        isRunning: true
+      };
+      const settings = {
+        rounds: 8,
+        exerciseTime: 30,
+        restTime: 10,
+        prepTime: 5
+      };
+
+      // Expected: 15 (current) + (6 × 30) = 15 + 180 = 195s
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(195);
+    });
+
+    test('Rest phase, Round 1: returns only remaining exercise rounds', () => {
+      const state = {
+        phase: Phase.Rest,
+        currentRound: 1,
+        timeRemaining: 10,
+        isRunning: true
+      };
+      const settings = {
+        rounds: 8,
+        exerciseTime: 30,
+        restTime: 10,
+        prepTime: 5
+      };
+
+      // Expected: 7 remaining rounds × 30s = 210s
+      // (Current round's exercise is already done)
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(210);
+    });
+
+    test('Exercise phase, last round: returns only current time', () => {
+      const state = {
+        phase: Phase.Exercise,
+        currentRound: 8,
+        timeRemaining: 10,
+        isRunning: true
+      };
+      const settings = {
+        rounds: 8,
+        exerciseTime: 30,
+        restTime: 10,
+        prepTime: 5
+      };
+
+      // Expected: 10 (current) + (0 × 30) = 10s
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(10);
+    });
+
+    test('Edge case: single round workout in prepare phase', () => {
+      const state = {
+        phase: Phase.Prepare,
+        currentRound: 1,
+        timeRemaining: 5,
+        isRunning: true
+      };
+      const settings = {
+        rounds: 1,
+        exerciseTime: 45,
+        restTime: 0,
+        prepTime: 5
+      };
+
+      // Expected: 1 round × 45s = 45s
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(45);
+    });
+
+    test('Edge case: single round workout in exercise phase', () => {
+      const state = {
+        phase: Phase.Exercise,
+        currentRound: 1,
+        timeRemaining: 20,
+        isRunning: true
+      };
+      const settings = {
+        rounds: 1,
+        exerciseTime: 45,
+        restTime: 0,
+        prepTime: 5
+      };
+
+      // Expected: 20 (current) + (0 × 45) = 20s
+      expect(calculateExerciseTimeRemaining(state, settings)).toBe(20);
+    });
+  });
+
   describe('Info Areas Visibility', () => {
     test('Info areas are NOT rendered in Ready phase', () => {
       renderTimer();
@@ -890,7 +1053,7 @@ describe('Timer Component', () => {
 
       // Info areas should not be present
       expect(screen.queryByText(/timer.totalRemaining/)).not.toBeInTheDocument();
-      expect(screen.queryByText(/timer.roundInfo/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/timer.exerciseRemaining/)).not.toBeInTheDocument();
     });
 
     test('Info areas are NOT rendered in Complete phase', async () => {
@@ -910,7 +1073,7 @@ describe('Timer Component', () => {
 
       // Info areas should not be present in Complete phase
       expect(screen.queryByText(/timer.totalRemaining/)).not.toBeInTheDocument();
-      expect(screen.queryByText(/timer.roundInfo/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/timer.exerciseRemaining/)).not.toBeInTheDocument();
     });
 
     test('Info areas ARE rendered in Prepare phase', async () => {
@@ -924,7 +1087,7 @@ describe('Timer Component', () => {
 
       // Info areas should be visible
       expect(screen.getByText(/timer.totalRemaining/)).toBeInTheDocument();
-      expect(screen.getByText(/timer.roundInfo/)).toBeInTheDocument();
+      expect(screen.getByText(/timer.exerciseRemaining/)).toBeInTheDocument();
     });
 
     test('Info areas ARE rendered in Exercise phase', async () => {
@@ -941,7 +1104,7 @@ describe('Timer Component', () => {
 
       // Info areas should be visible
       expect(screen.getByText(/timer.totalRemaining/)).toBeInTheDocument();
-      expect(screen.getByText(/timer.roundInfo/)).toBeInTheDocument();
+      expect(screen.getByText(/timer.exerciseRemaining/)).toBeInTheDocument();
     });
 
     test('Info areas ARE rendered in Rest phase', async () => {
@@ -959,10 +1122,10 @@ describe('Timer Component', () => {
 
       // Info areas should be visible
       expect(screen.getByText(/timer.totalRemaining/)).toBeInTheDocument();
-      expect(screen.getByText(/timer.roundInfo/)).toBeInTheDocument();
+      expect(screen.getByText(/timer.exerciseRemaining/)).toBeInTheDocument();
     });
 
-    test('Info areas display correct round information', async () => {
+    test('Info areas display correct exercise remaining time', async () => {
       const customSettings = { ...mockSettings, rounds: 5 };
       renderTimer(customSettings);
       const startButton = screen.getByLabelText(/start/i);
@@ -975,8 +1138,8 @@ describe('Timer Component', () => {
         expect(screen.getByText('timer.exercise')).toBeInTheDocument();
       });
 
-      // Should show "Round 1 of 5"
-      expect(screen.getByText(/timer.roundInfo/)).toBeInTheDocument();
+      // Should show exercise remaining time
+      expect(screen.getByText(/timer.exerciseRemaining/)).toBeInTheDocument();
     });
   });
 });
