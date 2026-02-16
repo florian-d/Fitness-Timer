@@ -36,8 +36,8 @@ const Timer: React.FC<TimerProps> = ({
   const audioUnlockedRef = useRef(false);
   const previousPhaseRef = useRef<Phase | null>(null);
 
-  // Keep screen awake during exercise phase only
-  useWakeLock(state.phase === 'exercise' && state.isRunning);
+  // Keep screen awake during exercise and rest phases
+  useWakeLock((state.phase === 'exercise' || state.phase === 'rest') && state.isRunning);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
