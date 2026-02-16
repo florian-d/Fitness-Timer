@@ -92,19 +92,56 @@ For UI-critical changes, validate the app runs correctly:
 
 ## Workflow for Making Changes
 
+### ⚠️ CRITICAL: Never commit directly to Main!
+
+**NEVER commit to the `main` branch directly!**
+
+Always follow this workflow:
+1. ✅ Create a new branch from `main`
+2. ✅ Make code changes on the feature branch
+3. ✅ Validate all changes (build, tests, runtime)
+4. ✅ Commit to your feature branch
+5. ✅ Create a Pull Request to `main`
+6. ✅ Merge PR to `main` via GitHub
+
+**Why?**
+- Maintains clean history
+- Enables code review (via PR)
+- Allows easy rollback if needed
+- Prevents accidental breaking changes
+
 ### Before Committing:
-1. ✅ Make code changes
-2. ✅ Run: `npm run build`
-3. ✅ Run: `npm test -- --watchAll=false`
-4. ✅ For UI/timer changes: Start app and test with Playwright
-5. ✅ Commit with clear message
-6. ✅ Create/link issue and PR
+1. ✅ Verify you're on a feature branch: `git branch`
+2. ✅ Make code changes
+3. ✅ Run: `npm run build`
+4. ✅ Run: `npm test -- --watchAll=false`
+5. ✅ For UI/timer changes: Start app and test with Playwright
+6. ✅ Commit with clear message
+7. ✅ Create/link issue and PR
 
 ### Branch Naming Convention
-- `feat/` - New features
-- `fix/` - Bug fixes
-- `refactor/` - Code refactoring
-- `test/` - Test improvements
+- `feat/` - New features (e.g., `feat/keep-screen-active-during-rest`)
+- `fix/` - Bug fixes (e.g., `fix/timer-reset-bug`)
+- `refactor/` - Code refactoring (e.g., `refactor/phase-enum`)
+- `test/` - Test improvements (e.g., `test/add-e2e-tests`)
+- `docs/` - Documentation updates (e.g., `docs/update-readme`)
+
+### Creating a New Branch
+
+```bash
+# Create and switch to a new branch from main
+git checkout -b feat/my-feature
+
+# Or using modern git syntax
+git switch -c feat/my-feature
+```
+
+**Always start from `main`:**
+```bash
+git checkout main
+git pull origin main
+git checkout -b feat/my-feature
+```
 
 ### Commit Message Format
 ```
@@ -113,6 +150,34 @@ For UI-critical changes, validate the app runs correctly:
 <detailed explanation>
 
 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+```
+
+### Example Workflow
+
+```bash
+# 1. Start from main
+git checkout main
+git pull origin main
+
+# 2. Create feature branch
+git checkout -b feat/my-new-feature
+
+# 3. Make changes and commit
+echo "new feature code" > src/newFeature.ts
+npm run build
+npm test -- --watchAll=false
+git add src/newFeature.ts
+git commit -m "feat: add my new feature"
+
+# 4. Push to remote
+git push -u origin feat/my-new-feature
+
+# 5. Create PR on GitHub (not via git, but via GitHub UI)
+# Visit: https://github.com/florian-d/Fitness-Timer/pulls
+
+# 6. After PR is merged, delete the local branch
+git checkout main
+git branch -d feat/my-new-feature
 ```
 
 ---
