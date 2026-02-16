@@ -1,4 +1,5 @@
 import { WorkoutSettings, WorkoutPreset, PresetStore } from '../App';
+import { DEFAULT_PHASE_COLORS } from './constants';
 
 const PRESETS_KEY = 'fitnessTimerPresets';
 export const DEFAULT_PRESET_NAME = 'Default';
@@ -8,6 +9,12 @@ export const DEFAULT_SETTINGS: WorkoutSettings = {
   exerciseTime: 30,
   restTime: 10,
   prepTime: 10,
+  phaseColors: {
+    ready: DEFAULT_PHASE_COLORS.ready,
+    prepare: DEFAULT_PHASE_COLORS.prepare,
+    exercise: DEFAULT_PHASE_COLORS.exercise,
+    rest: DEFAULT_PHASE_COLORS.rest,
+  },
 };
 
 /**
@@ -19,6 +26,12 @@ export const TEST_PRESET_SETTINGS: WorkoutSettings = {
   exerciseTime: 5,
   restTime: 2,
   prepTime: 1,
+  phaseColors: {
+    ready: DEFAULT_PHASE_COLORS.ready,
+    prepare: DEFAULT_PHASE_COLORS.prepare,
+    exercise: DEFAULT_PHASE_COLORS.exercise,
+    rest: DEFAULT_PHASE_COLORS.rest,
+  },
 };
 
 /**
