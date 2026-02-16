@@ -6,7 +6,9 @@
     "rest": "REST - Round {{current}}/{{total}}",
     "complete": "COMPLETE!",
     "tapToStart": "TAP TO START",
-    "preset": "Select Preset"
+    "preset": "Select Preset",
+    "totalRemaining": "{{time}} remaining",
+    "roundInfo": "Round {{current}} of {{total}}"
   },
   "settings": {
     "title": "Settings",

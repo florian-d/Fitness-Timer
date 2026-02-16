@@ -6,7 +6,9 @@
     "rest": "PAUSE - Runde {{current}}/{{total}}",
     "complete": "GESCHAFFT!",
     "tapToStart": "TIPPEN ZUM STARTEN",
-    "preset": "Preset wählen"
+    "preset": "Preset wählen",
+    "totalRemaining": "Noch {{time}}",
+    "roundInfo": "Runde {{current}} von {{total}}"
   },
   "settings": {
     "title": "Einstellungen",
