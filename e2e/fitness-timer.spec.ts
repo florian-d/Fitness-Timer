@@ -14,7 +14,7 @@ const TEST_PRESET = {
   prepTime: 1,
 };
 
-test.describe('Fitness Timer E2E', () => {
+test.describe('Fitness Timer E2E - Mobile (iPhone 12)', () => {
   test.beforeEach(async ({ page }) => {
     // Set up test preset with short intervals before navigating
     await page.addInitScript(({ preset }) => {
@@ -33,7 +33,7 @@ test.describe('Fitness Timer E2E', () => {
       localStorage.setItem('fitnessTimerPresets', JSON.stringify(store));
     }, { preset: TEST_PRESET });
 
-    await page.goto('http://localhost:3000');
+    await page.goto('/');
     await page.waitForTimeout(500);
   });
 

@@ -63,9 +63,17 @@ npm test -- --watchAll=false
 ```bash
 npm run e2e
 ```
-- **What it does:** Runs end-to-end tests
-- **Currently:** E2E tests in `e2e/` directory
+- **What it does:** Runs end-to-end tests in iPhone 12 viewport
+- **Browsers tested:** Chromium, Firefox, WebKit (all mobile)
+- **Viewport:** iPhone 12 (390x844) - Mobile-first testing
+- **Config:** `playwright.config.ts`
 - **Test file:** `e2e/fitness-timer.spec.ts`
+
+**Additional Playwright Commands:**
+```bash
+npm run e2e:ui      # Run tests with interactive UI mode
+npm run e2e:debug   # Run tests in debug mode with inspector
+```
 
 ### Step 4: Runtime Validation
 For UI-critical changes, validate the app runs correctly:
@@ -198,17 +206,30 @@ git branch -d feat/my-new-feature
 
 ---
 
+## Mobile-First Testing
+
+**All Playwright E2E tests use iPhone 12 viewport by default:**
+- Resolution: 390x844 pixels
+- Realistic mobile interaction patterns
+- Tests across 3 browsers: Chromium, Firefox, WebKit (all mobile)
+
+This ensures the app works perfectly on mobile devices where fitness tracking is most commonly used.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests
 - Pure function tests for `timerReducer`
 - React component tests with Testing Library
 - Mock hooks (useWakeLock, etc.)
+- Standard desktop viewport for component testing
 
 ### E2E Tests
 - User workflow tests with Playwright
-- Multi-browser support
-- Real app behavior validation
+- **Mobile-first:** iPhone 12 viewport (390x844)
+- Multi-browser support (Chromium, Firefox, WebKit)
+- Real app behavior validation in mobile environment
 
 ### Coverage Areas
 - ✅ Timer state transitions
