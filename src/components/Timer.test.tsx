@@ -27,6 +27,13 @@ const mockPresets: WorkoutPreset[] = [
   },
 ];
 
+const testPhaseColors = {
+  ready: DEFAULT_PHASE_COLORS.ready,
+  prepare: DEFAULT_PHASE_COLORS.prepare,
+  exercise: DEFAULT_PHASE_COLORS.exercise,
+  rest: DEFAULT_PHASE_COLORS.rest,
+};
+
 const mockOnRunningChange = jest.fn();
 const mockOnPresetChange = jest.fn();
 
@@ -660,7 +667,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 10 + (8 × 45) + (7 × 15) = 10 + 360 + 105 = 475
@@ -678,7 +686,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 30 + (7 × 45) + (7 × 15) = 30 + 315 + 105 = 450
@@ -696,7 +705,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 20 + (3 × 45) + (3 × 15) = 20 + 135 + 45 = 200
@@ -714,7 +724,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 10 + (6 × 45) + (5 × 15) = 10 + 270 + 75 = 355
@@ -732,7 +743,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 8 + (4 × 45) + (3 × 15) = 8 + 180 + 45 = 233
@@ -750,7 +762,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 25 + (0 × 45) + (0 × 15) = 25
@@ -769,7 +782,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 5 + (1 × 45) + (0 × 15) = 5 + 45 = 50
@@ -788,7 +802,8 @@ describe('Timer Component', () => {
         rounds: 1,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 10 + (1 × 45) + (0 × 15) = 10 + 45 = 55
@@ -807,7 +822,8 @@ describe('Timer Component', () => {
         rounds: 1,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 30 + (0 × 45) + (0 × 15) = 30
@@ -826,7 +842,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Ready phase has no workout time
@@ -844,7 +861,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 45,
         restTime: 15,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Complete phase has no remaining time
@@ -862,7 +880,8 @@ describe('Timer Component', () => {
         rounds: 3,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 10 + (3 × 30) + (2 × 10) = 10 + 90 + 20 = 120
@@ -880,7 +899,8 @@ describe('Timer Component', () => {
         rounds: 3,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 10
+        prepTime: 10,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 1 + (3 × 30) + (2 × 10) = 1 + 90 + 20 = 111
@@ -900,7 +920,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       expect(calculateExerciseTimeRemaining(state, settings)).toBe(0);
@@ -917,7 +938,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       expect(calculateExerciseTimeRemaining(state, settings)).toBe(0);
@@ -934,7 +956,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 8 rounds × 30s = 240s
@@ -952,7 +975,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 25 (current) + (7 × 30) = 25 + 210 = 235s
@@ -970,7 +994,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 15 (current) + (6 × 30) = 15 + 180 = 195s
@@ -988,7 +1013,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 7 remaining rounds × 30s = 210s
@@ -1007,7 +1033,8 @@ describe('Timer Component', () => {
         rounds: 8,
         exerciseTime: 30,
         restTime: 10,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 10 (current) + (0 × 30) = 10s
@@ -1025,7 +1052,8 @@ describe('Timer Component', () => {
         rounds: 1,
         exerciseTime: 45,
         restTime: 0,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 1 round × 45s = 45s
@@ -1043,7 +1071,8 @@ describe('Timer Component', () => {
         rounds: 1,
         exerciseTime: 45,
         restTime: 0,
-        prepTime: 5
+        prepTime: 5,
+        phaseColors: testPhaseColors,
       };
 
       // Expected: 20 (current) + (0 × 45) = 20s

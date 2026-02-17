@@ -57,6 +57,12 @@ describe('localStorage utilities', () => {
         exerciseTime: 45,
         restTime: 15,
         prepTime: 10,
+        phaseColors: {
+          ready: DEFAULT_PHASE_COLORS.ready,
+          prepare: DEFAULT_PHASE_COLORS.prepare,
+          exercise: DEFAULT_PHASE_COLORS.exercise,
+          rest: DEFAULT_PHASE_COLORS.rest,
+        },
       };
 
       const result = saveSettings(settings);
@@ -78,6 +84,12 @@ describe('localStorage utilities', () => {
         exerciseTime: 45,
         restTime: 15,
         prepTime: 10,
+        phaseColors: {
+          ready: DEFAULT_PHASE_COLORS.ready,
+          prepare: DEFAULT_PHASE_COLORS.prepare,
+          exercise: DEFAULT_PHASE_COLORS.exercise,
+          rest: DEFAULT_PHASE_COLORS.rest,
+        },
       };
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
@@ -106,6 +118,12 @@ describe('localStorage utilities', () => {
         exerciseTime: 45,
         restTime: 15,
         prepTime: 10,
+        phaseColors: {
+          ready: DEFAULT_PHASE_COLORS.ready,
+          prepare: DEFAULT_PHASE_COLORS.prepare,
+          exercise: DEFAULT_PHASE_COLORS.exercise,
+          rest: DEFAULT_PHASE_COLORS.rest,
+        },
       };
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -132,6 +150,12 @@ describe('localStorage utilities', () => {
         exerciseTime: 60,
         restTime: 20,
         prepTime: 15,
+        phaseColors: {
+          ready: DEFAULT_PHASE_COLORS.ready,
+          prepare: DEFAULT_PHASE_COLORS.prepare,
+          exercise: DEFAULT_PHASE_COLORS.exercise,
+          rest: DEFAULT_PHASE_COLORS.rest,
+        },
       };
 
       store['fitnessTimerSettings'] = JSON.stringify(storedSettings);
@@ -158,6 +182,7 @@ describe('localStorage utilities', () => {
         exerciseTime: 40,
         restTime: DEFAULT_SETTINGS.restTime, // Should use default
         prepTime: DEFAULT_SETTINGS.prepTime, // Should use default
+        phaseColors: DEFAULT_SETTINGS.phaseColors, // Should use default
       });
     });
 
@@ -236,6 +261,12 @@ describe('localStorage utilities', () => {
         exerciseTime: 45,
         restTime: 15,
         prepTime: 10,
+        phaseColors: {
+          ready: DEFAULT_PHASE_COLORS.ready,
+          prepare: DEFAULT_PHASE_COLORS.prepare,
+          exercise: DEFAULT_PHASE_COLORS.exercise,
+          rest: DEFAULT_PHASE_COLORS.rest,
+        },
       };
 
       store['fitnessTimerSettings'] = JSON.stringify(settings);
@@ -493,7 +524,7 @@ describe('localStorage utilities', () => {
       });
 
       test('creates new preset with unique name', () => {
-        const newSettings = { rounds: 5, exerciseTime: 40, restTime: 20, prepTime: 10 };
+        const newSettings = { rounds: 5, exerciseTime: 40, restTime: 20, prepTime: 10, phaseColors: { ready: DEFAULT_PHASE_COLORS.ready, prepare: DEFAULT_PHASE_COLORS.prepare, exercise: DEFAULT_PHASE_COLORS.exercise, rest: DEFAULT_PHASE_COLORS.rest } };
         const result = createPreset(mockStore, 'HIIT', newSettings);
 
         expect(result).not.toBeNull();
@@ -542,7 +573,7 @@ describe('localStorage utilities', () => {
             {
               id: 'preset-2',
               name: 'HIIT',
-              settings: { rounds: 10, exerciseTime: 20, restTime: 10, prepTime: 5 },
+              settings: { rounds: 10, exerciseTime: 20, restTime: 10, prepTime: 5, phaseColors: { ready: DEFAULT_PHASE_COLORS.ready, prepare: DEFAULT_PHASE_COLORS.prepare, exercise: DEFAULT_PHASE_COLORS.exercise, rest: DEFAULT_PHASE_COLORS.rest } },
               createdAt: Date.now() + 1000,
             },
           ],
@@ -551,7 +582,7 @@ describe('localStorage utilities', () => {
       });
 
       test('updates preset settings', () => {
-        const newSettings = { rounds: 15, exerciseTime: 30, restTime: 15, prepTime: 10 };
+        const newSettings = { rounds: 15, exerciseTime: 30, restTime: 15, prepTime: 10, phaseColors: { ready: DEFAULT_PHASE_COLORS.ready, prepare: DEFAULT_PHASE_COLORS.prepare, exercise: DEFAULT_PHASE_COLORS.exercise, rest: DEFAULT_PHASE_COLORS.rest } };
         const result = updatePreset(mockStore, 'preset-1', { settings: newSettings });
 
         expect(result!.presets[0].settings).toEqual(newSettings);
@@ -566,7 +597,7 @@ describe('localStorage utilities', () => {
       });
 
       test('updates both name and settings', () => {
-        const newSettings = { rounds: 15, exerciseTime: 30, restTime: 15, prepTime: 10 };
+        const newSettings = { rounds: 15, exerciseTime: 30, restTime: 15, prepTime: 10, phaseColors: { ready: DEFAULT_PHASE_COLORS.ready, prepare: DEFAULT_PHASE_COLORS.prepare, exercise: DEFAULT_PHASE_COLORS.exercise, rest: DEFAULT_PHASE_COLORS.rest } };
         const result = updatePreset(mockStore, 'preset-1', { name: 'Custom', settings: newSettings });
 
         expect(result!.presets[0].name).toBe('Custom');
@@ -616,7 +647,7 @@ describe('localStorage utilities', () => {
             {
               id: 'preset-2',
               name: 'HIIT',
-              settings: { rounds: 10, exerciseTime: 20, restTime: 10, prepTime: 5 },
+              settings: { rounds: 10, exerciseTime: 20, restTime: 10, prepTime: 5, phaseColors: { ready: DEFAULT_PHASE_COLORS.ready, prepare: DEFAULT_PHASE_COLORS.prepare, exercise: DEFAULT_PHASE_COLORS.exercise, rest: DEFAULT_PHASE_COLORS.rest } },
               createdAt: Date.now() + 1000,
             },
           ],
@@ -672,7 +703,7 @@ describe('localStorage utilities', () => {
             {
               id: 'preset-2',
               name: 'HIIT',
-              settings: { rounds: 10, exerciseTime: 20, restTime: 10, prepTime: 5 },
+              settings: { rounds: 10, exerciseTime: 20, restTime: 10, prepTime: 5, phaseColors: { ready: DEFAULT_PHASE_COLORS.ready, prepare: DEFAULT_PHASE_COLORS.prepare, exercise: DEFAULT_PHASE_COLORS.exercise, rest: DEFAULT_PHASE_COLORS.rest } },
               createdAt: Date.now() + 1000,
             },
           ],

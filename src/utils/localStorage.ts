@@ -64,6 +64,7 @@ export const loadSettings = (): WorkoutSettings => {
       prepTime: typeof mergedSettings.prepTime === 'number' && mergedSettings.prepTime > 0
         ? mergedSettings.prepTime
         : DEFAULT_SETTINGS.prepTime,
+      phaseColors: mergedSettings.phaseColors || DEFAULT_SETTINGS.phaseColors,
     };
   } catch (error) {
     console.error('Failed to load settings from localStorage:', error);

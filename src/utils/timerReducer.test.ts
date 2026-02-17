@@ -1,5 +1,6 @@
 import { timerReducer, getInitialTimerState, Phase, TimerState } from './timerReducer';
 import { WorkoutSettings } from '../App';
+import { DEFAULT_PHASE_COLORS } from './constants';
 
 describe('timerReducer', () => {
   const mockSettings: WorkoutSettings = {
@@ -7,6 +8,12 @@ describe('timerReducer', () => {
     exerciseTime: 30,
     restTime: 10,
     prepTime: 5,
+    phaseColors: {
+      ready: DEFAULT_PHASE_COLORS.ready,
+      prepare: DEFAULT_PHASE_COLORS.prepare,
+      exercise: DEFAULT_PHASE_COLORS.exercise,
+      rest: DEFAULT_PHASE_COLORS.rest,
+    },
   };
 
   describe('getInitialTimerState', () => {
