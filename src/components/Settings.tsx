@@ -205,8 +205,8 @@ const Settings: React.FC<SettingsProps> = ({
             inputId="prep-time"
           />
 
-          <div className="color-pickers-section">
-            <h3>{t('settings.phaseColors')}</h3>
+          <div className="setting-item color-pickers-section">
+            <label>{t('settings.phaseColors')}</label>
 
             <div className="color-picker-item">
               <label htmlFor="ready-color">{t('settings.readyColor')}</label>

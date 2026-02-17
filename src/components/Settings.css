@@ -501,46 +501,47 @@
 }
 
 .color-pickers-section {
-  margin-top: 30px;
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.color-pickers-section h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 15px;
-  color: #374151;
+.color-pickers-section label {
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .color-picker-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 14px;
 }
 
 .color-picker-item label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
-  color: #4B5563;
+  color: white;
 }
 
 .color-picker-item input[type="color"] {
-  width: 60px;
+  width: 50px;
   height: 40px;
-  border: 2px solid #D1D5DB;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   cursor: pointer;
   padding: 2px;
-  background: white;
+  background: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
 }
 
 .color-picker-item input[type="color"]:hover {
-  border-color: #9CA3AF;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .color-picker-item input[type="color"]:focus {
   outline: none;
-  border-color: #6366F1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: white;
 }
