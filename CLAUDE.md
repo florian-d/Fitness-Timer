@@ -33,7 +33,27 @@ npm start                        # Verify app loads (for UI changes)
 - Jest + React Testing Library + Playwright
 - useReducer state management
 - react-i18next (EN/DE)
-- CSS styling
+- CSS styling (separate `.css` files per component)
+
+---
+
+## File Structure
+
+```
+src/
+├── App.tsx                    # Preset state management + types (WorkoutSettings, WorkoutPreset, PresetStore)
+├── components/
+│   ├── Timer.tsx              # Timer state machine + display
+│   └── Settings.tsx           # Settings UI + preset editor
+├── hooks/useWakeLock.ts       # Screen wake lock during exercise
+├── utils/
+│   ├── icons.tsx              # SVG icon components (NEVER use emoji!)
+│   ├── localStorage.ts        # Preset persistence + legacy migration
+│   ├── presetStorage.ts       # Preset CRUD + defaults
+│   ├── timerReducer.ts        # Timer state machine (Phase enum)
+│   └── analytics.ts           # Matomo event tracking
+└── locales/{en,de}.json       # Translations (ALWAYS update both!)
+```
 
 ---
 
@@ -41,7 +61,10 @@ npm start                        # Verify app loads (for UI changes)
 
 ### Phase Type (Enum)
 - Location: `src/utils/timerReducer.ts`
-- Values: Ready, Prepare, Exercise, Rest, Complete
+- Values: `Ready → Prepare → Exercise ↔ Rest → Complete`
+
+### Phase Colors
+- Gray `#6B7280` (ready) | Yellow `#F59E0B` (prepare) | Red `#EF4444` (exercise) | Green `#10B981` (rest) | Blue `#3B82F6` (complete)
 
 ### Test Preset
 - Location: `src/utils/presetStorage.ts` as `TEST_PRESET_SETTINGS`
@@ -50,6 +73,37 @@ npm start                        # Verify app loads (for UI changes)
 ### Wake Lock
 - Active during Exercise AND Rest phases
 - Gracefully handles unsupported browsers
+
+---
+
+## Key Conventions
+
+### ✅ DO
+- Use SVG icons from `utils/icons.tsx` (PlayIcon, PauseIcon, ResetIcon, MenuIcon, CloseIcon, BackIcon, EditIcon, TrashIcon, CheckIcon)
+- Use `useTranslation()` for ALL user-facing text — no hardcoded strings
+- Use `useCallback` for stable event handler references
+- Update BOTH `en.json` and `de.json` together
+- Test on mobile viewport (390x844)
+
+### ❌ DON'T
+- Use emoji icons — always use SVG
+- Hardcode text strings — always use i18n keys (`feature.action` pattern)
+- Modify localStorage directly — use utility functions from `utils/localStorage.ts`
+- Commit to `main` directly
+
+---
+
+## Architecture Decisions (Summary)
+
+| Decision | Choice | Rationale |
+|---|---|---|
+| State management | `useReducer` (timer) + local state (settings form) + App.tsx (presets) | Clear separation |
+| Icons | SVG components in `utils/icons.tsx` | Consistent, scalable, styleable |
+| i18n | i18next + JSON files | Industry standard, browser detection |
+| Persistence | localStorage (key: `fitnessTimerPresets`) | Simple, offline-first |
+| Styling | Separate `.css` files per component | Simple, no runtime overhead |
+| Testing | React Testing Library — test behavior not internals | User-focused |
+| Analytics | Matomo (privacy-first) | GDPR compliant, self-hostable |
 
 ---
 
