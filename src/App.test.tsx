@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import App from './App';
+import App, { WorkoutSettings } from './App';
 import * as localStorageUtils from './utils/localStorage';
+import { DEFAULT_PHASE_COLORS } from './utils/constants';
 
 // Mock the localStorage utilities
 jest.mock('./utils/localStorage');
@@ -22,6 +23,12 @@ const defaultPresetStore = {
         exerciseTime: 30,
         restTime: 10,
         prepTime: 10,
+        phaseColors: {
+          ready: DEFAULT_PHASE_COLORS.ready,
+          prepare: DEFAULT_PHASE_COLORS.prepare,
+          exercise: DEFAULT_PHASE_COLORS.exercise,
+          rest: DEFAULT_PHASE_COLORS.rest,
+        },
       },
       createdAt: Date.now(),
     },
@@ -134,5 +141,27 @@ describe('App', () => {
     await waitFor(() => {
       expect(mockSavePresetStore).toHaveBeenCalled();
     });
+  });
+});
+
+describe('WorkoutSettings', () => {
+  it('should support phaseColors property', () => {
+    const settings: WorkoutSettings = {
+      rounds: 8,
+      exerciseTime: 30,
+      restTime: 10,
+      prepTime: 10,
+      phaseColors: {
+        ready: DEFAULT_PHASE_COLORS.ready,
+        prepare: DEFAULT_PHASE_COLORS.prepare,
+        exercise: DEFAULT_PHASE_COLORS.exercise,
+        rest: DEFAULT_PHASE_COLORS.rest,
+      }
+    };
+
+    expect(settings.phaseColors.ready).toBe('#6B7280');
+    expect(settings.phaseColors.prepare).toBe('#F59E0B');
+    expect(settings.phaseColors.exercise).toBe('#EF4444');
+    expect(settings.phaseColors.rest).toBe('#10B981');
   });
 });

@@ -64,6 +64,7 @@ export const loadSettings = (): WorkoutSettings => {
       prepTime: typeof mergedSettings.prepTime === 'number' && mergedSettings.prepTime > 0
         ? mergedSettings.prepTime
         : DEFAULT_SETTINGS.prepTime,
+      phaseColors: mergedSettings.phaseColors || DEFAULT_SETTINGS.phaseColors,
     };
   } catch (error) {
     console.error('Failed to load settings from localStorage:', error);
@@ -119,7 +120,7 @@ export const loadPresetStore = (): PresetStore => {
     const legacyJson = localStorage.getItem(SETTINGS_KEY);
     if (legacyJson) {
       const legacySettings = JSON.parse(legacyJson);
-      const mergedSettings: WorkoutSettings = {
+      const mergedSettings: Partial<WorkoutSettings> = {
         ...DEFAULT_SETTINGS,
         ...legacySettings,
       };
@@ -137,6 +138,8 @@ export const loadPresetStore = (): PresetStore => {
         prepTime: typeof mergedSettings.prepTime === 'number' && mergedSettings.prepTime > 0
           ? mergedSettings.prepTime
           : DEFAULT_SETTINGS.prepTime,
+        // Add phaseColors from defaults (legacy settings won't have this)
+        phaseColors: mergedSettings.phaseColors || DEFAULT_SETTINGS.phaseColors,
       };
 
       const defaultPreset: WorkoutPreset = {

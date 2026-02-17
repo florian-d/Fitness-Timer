@@ -18,6 +18,12 @@ export interface WorkoutSettings {
   exerciseTime: number; // in seconds
   restTime: number; // in seconds
   prepTime: number; // in seconds
+  phaseColors: {
+    ready: string;      // Hex color
+    prepare: string;    // Hex color
+    exercise: string;   // Hex color
+    rest: string;       // Hex color
+  };
 }
 
 export interface WorkoutPreset {

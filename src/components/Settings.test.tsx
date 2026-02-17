@@ -2,12 +2,19 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Settings from './Settings';
 import { WorkoutSettings, PresetStore } from '../App';
+import { DEFAULT_PHASE_COLORS } from '../utils/constants';
 
 const mockSettings: WorkoutSettings = {
   rounds: 8,
   exerciseTime: 30,
   restTime: 10,
   prepTime: 10,
+  phaseColors: {
+    ready: DEFAULT_PHASE_COLORS.ready,
+    prepare: DEFAULT_PHASE_COLORS.prepare,
+    exercise: DEFAULT_PHASE_COLORS.exercise,
+    rest: DEFAULT_PHASE_COLORS.rest,
+  },
 };
 
 const mockPresetStore: PresetStore = {
@@ -106,6 +113,12 @@ describe('Settings Component', () => {
       exerciseTime: 30,
       restTime: 10,
       prepTime: 10,
+      phaseColors: {
+        ready: DEFAULT_PHASE_COLORS.ready,
+        prepare: DEFAULT_PHASE_COLORS.prepare,
+        exercise: DEFAULT_PHASE_COLORS.exercise,
+        rest: DEFAULT_PHASE_COLORS.rest,
+      },
     };
     const store: PresetStore = {
       activePresetId: 'preset-1',
@@ -143,6 +156,12 @@ describe('Settings Component', () => {
       exerciseTime: 30,
       restTime: 10,
       prepTime: 10,
+      phaseColors: {
+        ready: DEFAULT_PHASE_COLORS.ready,
+        prepare: DEFAULT_PHASE_COLORS.prepare,
+        exercise: DEFAULT_PHASE_COLORS.exercise,
+        rest: DEFAULT_PHASE_COLORS.rest,
+      },
     });
   });
 

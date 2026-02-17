@@ -39,6 +39,12 @@ const Settings: React.FC<SettingsProps> = ({
   const [restTime, setRestTime] = useState(settings.restTime);
   const [prepTime, setPrepTime] = useState(settings.prepTime);
 
+  // Phase color state
+  const [readyColor, setReadyColor] = useState(settings.phaseColors.ready);
+  const [prepareColor, setPrepareColor] = useState(settings.phaseColors.prepare);
+  const [exerciseColor, setExerciseColor] = useState(settings.phaseColors.exercise);
+  const [restColor, setRestColor] = useState(settings.phaseColors.rest);
+
   // Preset management state
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
   const [editingPresetName, setEditingPresetName] = useState('');
@@ -69,6 +75,11 @@ const Settings: React.FC<SettingsProps> = ({
     setExerciseTime(preset.settings.exerciseTime);
     setRestTime(preset.settings.restTime);
     setPrepTime(preset.settings.prepTime);
+    // Load colors
+    setReadyColor(preset.settings.phaseColors.ready);
+    setPrepareColor(preset.settings.phaseColors.prepare);
+    setExerciseColor(preset.settings.phaseColors.exercise);
+    setRestColor(preset.settings.phaseColors.rest);
     // Open sub-page
     setEditingPresetSettings(presetId);
   };
@@ -80,6 +91,12 @@ const Settings: React.FC<SettingsProps> = ({
       exerciseTime,
       restTime,
       prepTime,
+      phaseColors: {
+        ready: readyColor,
+        prepare: prepareColor,
+        exercise: exerciseColor,
+        rest: restColor,
+      },
     });
     setEditingPresetSettings(null);
   };
@@ -187,6 +204,54 @@ const Settings: React.FC<SettingsProps> = ({
             onChange={setPrepTime}
             inputId="prep-time"
           />
+
+          <div className="setting-item color-pickers-section">
+            <label>{t('settings.phaseColors')}</label>
+
+            <div className="color-picker-item">
+              <label htmlFor="ready-color">{t('settings.readyColor')}</label>
+              <input
+                type="color"
+                id="ready-color"
+                value={readyColor}
+                onChange={(e) => setReadyColor(e.target.value)}
+                aria-label="Ready Color"
+              />
+            </div>
+
+            <div className="color-picker-item">
+              <label htmlFor="prepare-color">{t('settings.prepareColor')}</label>
+              <input
+                type="color"
+                id="prepare-color"
+                value={prepareColor}
+                onChange={(e) => setPrepareColor(e.target.value)}
+                aria-label="Prepare Color"
+              />
+            </div>
+
+            <div className="color-picker-item">
+              <label htmlFor="exercise-color">{t('settings.exerciseColor')}</label>
+              <input
+                type="color"
+                id="exercise-color"
+                value={exerciseColor}
+                onChange={(e) => setExerciseColor(e.target.value)}
+                aria-label="Exercise Color"
+              />
+            </div>
+
+            <div className="color-picker-item">
+              <label htmlFor="rest-color">{t('settings.restColor')}</label>
+              <input
+                type="color"
+                id="rest-color"
+                value={restColor}
+                onChange={(e) => setRestColor(e.target.value)}
+                aria-label="Rest Color"
+              />
+            </div>
+          </div>
 
           <div className="settings-summary">
             <h3>{t('settings.summary')}</h3>

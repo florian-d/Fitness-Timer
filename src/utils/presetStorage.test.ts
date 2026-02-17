@@ -1,5 +1,6 @@
-import { createPreset, updatePreset, deletePreset, setActivePreset, isPresetNameUnique } from './presetStorage';
+import { createPreset, updatePreset, deletePreset, setActivePreset, isPresetNameUnique, DEFAULT_SETTINGS, TEST_PRESET_SETTINGS } from './presetStorage';
 import { PresetStore, WorkoutPreset, WorkoutSettings } from '../App';
+import { DEFAULT_PHASE_COLORS } from './constants';
 
 describe('presetStorage', () => {
   const defaultSettings: WorkoutSettings = {
@@ -7,6 +8,12 @@ describe('presetStorage', () => {
     exerciseTime: 30,
     restTime: 10,
     prepTime: 10,
+    phaseColors: {
+      ready: DEFAULT_PHASE_COLORS.ready,
+      prepare: DEFAULT_PHASE_COLORS.prepare,
+      exercise: DEFAULT_PHASE_COLORS.exercise,
+      rest: DEFAULT_PHASE_COLORS.rest,
+    },
   };
 
   const createMockPreset = (id: string, name: string): WorkoutPreset => ({
@@ -145,6 +152,26 @@ describe('presetStorage', () => {
       const store = createMockStore([createMockPreset('1', 'Default')], '1');
       const result = setActivePreset(store, '999');
       expect(result).toBeNull();
+    });
+  });
+
+  describe('Preset Settings with Phase Colors', () => {
+    it('DEFAULT_SETTINGS should have default phase colors', () => {
+      expect(DEFAULT_SETTINGS.phaseColors).toEqual({
+        ready: DEFAULT_PHASE_COLORS.ready,
+        prepare: DEFAULT_PHASE_COLORS.prepare,
+        exercise: DEFAULT_PHASE_COLORS.exercise,
+        rest: DEFAULT_PHASE_COLORS.rest,
+      });
+    });
+
+    it('TEST_PRESET_SETTINGS should have default phase colors', () => {
+      expect(TEST_PRESET_SETTINGS.phaseColors).toEqual({
+        ready: DEFAULT_PHASE_COLORS.ready,
+        prepare: DEFAULT_PHASE_COLORS.prepare,
+        exercise: DEFAULT_PHASE_COLORS.exercise,
+        rest: DEFAULT_PHASE_COLORS.rest,
+      });
     });
   });
 });
