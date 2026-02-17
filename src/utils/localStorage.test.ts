@@ -1,4 +1,4 @@
-import { WorkoutSettings, WorkoutPreset, PresetStore } from '../App';
+import { WorkoutSettings, WorkoutPreset, PresetStore } from '../types';
 import {
   DEFAULT_SETTINGS,
   DEFAULT_PRESET_NAME,

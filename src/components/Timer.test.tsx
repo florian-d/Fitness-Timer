@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import Timer, { calculateTotalRemainingTime, calculateExerciseTimeRemaining } from './Timer';
-import { WorkoutSettings, WorkoutPreset } from '../App';
+import { WorkoutSettings, WorkoutPreset } from '../types';
 import { Phase } from '../utils/timerReducer';
 
 const mockSettings: WorkoutSettings = {

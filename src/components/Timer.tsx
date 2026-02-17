@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useRef, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WorkoutSettings, WorkoutPreset } from '../App';
+import { WorkoutSettings, WorkoutPreset } from '../types';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { trackEvent } from '../utils/analytics';
 import { timerReducer, getInitialTimerState, TimerState, TimerEvent, Phase } from '../utils/timerReducer';

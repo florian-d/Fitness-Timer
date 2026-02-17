@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WorkoutSettings, PresetStore } from '../App';
-import { BackIcon, CloseIcon, EditIcon, TrashIcon, CheckIcon } from '../utils/icons';
-import NumericInput from './NumericInput';
+import { WorkoutSettings, PresetStore } from '../types';
+import { CloseIcon, EditIcon, TrashIcon, CheckIcon } from '../utils/icons';
+import PresetEditor from './PresetEditor';
 import './Settings.css';
+import './PresetList.css';
 
 interface SettingsProps {
   settings: WorkoutSettings;
@@ -33,12 +34,6 @@ const Settings: React.FC<SettingsProps> = ({
   // Sub-page state: which preset's settings are being edited
   const [editingPresetSettings, setEditingPresetSettings] = useState<string | null>(null);
 
-  // Timer value state (used in sub-page)
-  const [rounds, setRounds] = useState(settings.rounds);
-  const [exerciseTime, setExerciseTime] = useState(settings.exerciseTime);
-  const [restTime, setRestTime] = useState(settings.restTime);
-  const [prepTime, setPrepTime] = useState(settings.prepTime);
-
   // Preset management state
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
   const [editingPresetName, setEditingPresetName] = useState('');
@@ -62,30 +57,8 @@ const Settings: React.FC<SettingsProps> = ({
   const openPresetSettings = (presetId: string) => {
     const preset = presetStore.presets.find(p => p.id === presetId);
     if (!preset) return;
-    // Switch to this preset as active
     onPresetSwitch(presetId);
-    // Load its settings into local state
-    setRounds(preset.settings.rounds);
-    setExerciseTime(preset.settings.exerciseTime);
-    setRestTime(preset.settings.restTime);
-    setPrepTime(preset.settings.prepTime);
-    // Open sub-page
     setEditingPresetSettings(presetId);
-  };
-
-  const handleSavePresetSettings = () => {
-    if (!editingPresetSettings) return;
-    onSave(editingPresetSettings, {
-      rounds,
-      exerciseTime,
-      restTime,
-      prepTime,
-    });
-    setEditingPresetSettings(null);
-  };
-
-  const handleBackFromSubpage = () => {
-    setEditingPresetSettings(null);
   };
 
   const handleCreatePreset = () => {
@@ -94,7 +67,6 @@ const Settings: React.FC<SettingsProps> = ({
       setNewPresetName('');
       setShowNewPresetForm(false);
       setPresetError('');
-      // Open sub-page for the new preset
       openPresetSettings(newPresetId);
     } else {
       setPresetError(t('presets.error.nameTaken') as string);
@@ -131,73 +103,21 @@ const Settings: React.FC<SettingsProps> = ({
     }
   };
 
-  // Get the name of the preset being edited in sub-page
+  // Sub-page: delegate to PresetEditor
   const editingPreset = editingPresetSettings
     ? presetStore.presets.find(p => p.id === editingPresetSettings)
     : null;
 
-  // Sub-page: edit preset timer values
   if (editingPresetSettings && editingPreset) {
     return (
-      <div className="settings-container">
-        <div className="settings-header">
-          <button className="back-button" onClick={handleBackFromSubpage} aria-label="Back to settings">
-            <BackIcon />
-          </button>
-          <h1 className="subpage-title">{editingPreset.name}</h1>
-          <div className="header-spacer"></div>
-        </div>
-
-        <div className="settings-content">
-          <NumericInput
-            label={t('settings.rounds') as string}
-            value={rounds}
-            min={1}
-            max={50}
-            onChange={setRounds}
-            inputId="rounds"
-          />
-
-          <NumericInput
-            label={t('settings.exerciseTime') as string}
-            value={exerciseTime}
-            min={5}
-            max={600}
-            step={5}
-            onChange={setExerciseTime}
-            inputId="exercise-time"
-          />
-
-          <NumericInput
-            label={t('settings.restTime') as string}
-            value={restTime}
-            min={5}
-            max={300}
-            step={5}
-            onChange={setRestTime}
-            inputId="rest-time"
-          />
-
-          <NumericInput
-            label={t('settings.prepTime') as string}
-            value={prepTime}
-            min={3}
-            max={30}
-            step={1}
-            onChange={setPrepTime}
-            inputId="prep-time"
-          />
-
-          <div className="settings-summary">
-            <h3>{t('settings.summary')}</h3>
-            <p>{t('settings.totalTime', { minutes: Math.ceil((exerciseTime * rounds + restTime * (rounds - 1)) / 60) })}</p>
-          </div>
-
-          <button className="save-button" onClick={handleSavePresetSettings}>
-            {t('settings.save')}
-          </button>
-        </div>
-      </div>
+      <PresetEditor
+        preset={editingPreset}
+        onBack={() => setEditingPresetSettings(null)}
+        onSave={(presetId, newSettings) => {
+          onSave(presetId, newSettings);
+          setEditingPresetSettings(null);
+        }}
+      />
     );
   }
 
@@ -319,9 +239,9 @@ const Settings: React.FC<SettingsProps> = ({
 
         <div className="settings-divider"></div>
 
-        <div className="setting-item">
+        <div className="language-setting">
           <label htmlFor="language">{t('settings.language')}</label>
-          <div className="input-group">
+          <div className="language-input">
             <select
               id="language"
               value={currentLanguage}

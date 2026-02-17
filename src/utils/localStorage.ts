@@ -1,4 +1,4 @@
-import { WorkoutSettings, WorkoutPreset, PresetStore } from '../App';
+import { WorkoutSettings, WorkoutPreset, PresetStore } from '../types';
 import {
   loadPresetStore as loadPresetsFromStorage,
   savePresetStore,

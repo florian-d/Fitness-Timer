@@ -1,5 +1,5 @@
 import { timerReducer, getInitialTimerState, Phase, TimerState } from './timerReducer';
-import { WorkoutSettings } from '../App';
+import { WorkoutSettings } from '../types';
 
 describe('timerReducer', () => {
   const mockSettings: WorkoutSettings = {

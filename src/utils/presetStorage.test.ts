@@ -1,5 +1,5 @@
 import { createPreset, updatePreset, deletePreset, setActivePreset, isPresetNameUnique } from './presetStorage';
-import { PresetStore, WorkoutPreset, WorkoutSettings } from '../App';
+import { PresetStore, WorkoutPreset, WorkoutSettings } from '../types';
 
 describe('presetStorage', () => {
   const defaultSettings: WorkoutSettings = {

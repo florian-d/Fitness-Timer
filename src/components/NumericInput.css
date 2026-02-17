@@ -1,2 +1,79 @@
-/* NumericInput styling is handled by parent Settings.css */
-/* The .setting-item and .input-group classes are defined there */
+.numeric-input {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.numeric-input label {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.numeric-input .input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.numeric-input .input-group button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.numeric-input .input-group button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.numeric-input .input-group button:active {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0.95);
+}
+
+.numeric-input .input-group input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.numeric-input .input-group input::-webkit-outer-spin-button,
+.numeric-input .input-group input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .numeric-input label {
+    font-size: 16px;
+  }
+
+  .numeric-input .input-group button {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+
+  .numeric-input .input-group input {
+    font-size: 20px;
+  }
+}

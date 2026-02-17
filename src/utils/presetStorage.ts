@@ -1,4 +1,4 @@
-import { WorkoutSettings, WorkoutPreset, PresetStore } from '../App';
+import { WorkoutSettings, WorkoutPreset, PresetStore } from '../types';
 
 const PRESETS_KEY = 'fitnessTimerPresets';
 export const DEFAULT_PRESET_NAME = 'Default';

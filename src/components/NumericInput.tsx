@@ -41,7 +41,7 @@ const NumericInput: React.FC<NumericInputProps> = ({
   };
 
   return (
-    <div className="setting-item">
+    <div className="numeric-input">
       <label htmlFor={inputId}>{label}</label>
       <div className="input-group">
         <button

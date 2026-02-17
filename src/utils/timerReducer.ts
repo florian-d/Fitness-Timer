@@ -1,4 +1,4 @@
-import { WorkoutSettings } from '../App';
+import { WorkoutSettings } from '../types';
 
 export enum Phase {
   Ready = 'ready',

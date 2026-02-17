@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Settings from './Settings';
-import { WorkoutSettings, PresetStore } from '../App';
+import { WorkoutSettings, PresetStore } from '../types';
 
 const mockSettings: WorkoutSettings = {
   rounds: 8,

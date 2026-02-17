@@ -22,30 +22,7 @@
   margin: 0;
 }
 
-.close-button {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  color: white;
-  font-size: 28px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.close-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.close-button:active {
-  background: rgba(255, 255, 255, 0.4);
-}
-
+.close-button,
 .back-button {
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -62,10 +39,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.close-button:hover,
 .back-button:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
+.close-button:active,
 .back-button:active {
   background: rgba(255, 255, 255, 0.4);
 }
@@ -88,93 +67,6 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
-}
-
-.setting-item {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.setting-item label {
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.input-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 10px;
-}
-
-.input-group button {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-size: 24px;
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;
-}
-
-.input-group button:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.input-group button:active {
-  background: rgba(255, 255, 255, 0.4);
-  transform: scale(0.95);
-}
-
-.input-group input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 24px;
-  font-weight: 600;
-  text-align: center;
-  outline: none;
-  -moz-appearance: textfield;
-}
-
-.input-group input::-webkit-outer-spin-button,
-.input-group input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.input-group select,
-.language-select {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  outline: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-.language-select option {
-  background: #667eea;
-  color: white;
 }
 
 .settings-summary {
@@ -221,24 +113,62 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+.settings-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0;
+}
+
+/* Language selector */
+.language-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.language-setting label {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.language-input {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.language-select {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.language-select option {
+  background: #667eea;
+  color: white;
+}
+
 /* Mobile optimizations */
 @media (max-width: 480px) {
   .settings-header h1 {
     font-size: 24px;
   }
 
-  .setting-item label {
+  .language-setting label {
     font-size: 16px;
-  }
-
-  .input-group button {
-    width: 45px;
-    height: 45px;
-    font-size: 20px;
-  }
-
-  .input-group input {
-    font-size: 20px;
   }
 }
 
@@ -246,256 +176,5 @@
 @supports (-webkit-touch-callout: none) {
   .settings-container {
     height: -webkit-fill-available;
-  }
-}
-
-/* Preset Management Section */
-.preset-section {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 20px;
-}
-
-.preset-section h3 {
-  margin: 0 0 16px 0;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.preset-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.preset-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.1);
-  transition: all 0.2s ease;
-}
-
-.preset-item.active {
-  border-color: rgba(255, 255, 255, 0.6);
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.preset-select-button {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  text-align: left;
-  -webkit-tap-highlight-color: transparent;
-  border-radius: 6px;
-  transition: background 0.2s ease;
-}
-
-.preset-select-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.preset-name {
-  font-weight: 500;
-}
-
-.active-indicator {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 16px;
-}
-
-.preset-action-button {
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;
-}
-
-.preset-action-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.preset-action-button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.preset-edit {
-  display: flex;
-  gap: 8px;
-  flex: 1;
-  align-items: center;
-}
-
-.preset-edit input {
-  flex: 1;
-  padding: 10px 12px;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.preset-edit input:focus {
-  outline: none;
-  border-color: white;
-}
-
-.preset-edit button {
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.preset-edit button:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.new-preset-form {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.new-preset-form input {
-  flex: 1;
-  padding: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 16px;
-}
-
-.new-preset-form input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.new-preset-form input:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.new-preset-form button {
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.new-preset-form button:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.add-preset-button {
-  width: 100%;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  color: white;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.add-preset-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-.preset-error {
-  padding: 12px;
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.5);
-  border-radius: 8px;
-  color: #FCA5A5;
-  font-size: 14px;
-  margin-top: 8px;
-}
-
-.settings-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 0;
-}
-
-/* Mobile optimizations for presets */
-@media (max-width: 480px) {
-  .preset-section h3 {
-    font-size: 18px;
-  }
-
-  .preset-select-button {
-    font-size: 15px;
-    padding: 9px 10px;
-  }
-
-  .preset-name {
-    font-size: 15px;
-  }
-
-  .preset-action-button {
-    padding: 7px 10px;
-    font-size: 15px;
-  }
-
-  .preset-edit input {
-    font-size: 15px;
-    padding: 9px 10px;
-  }
-
-  .new-preset-form input {
-    font-size: 15px;
-    padding: 10px;
-  }
-
-  .new-preset-form button {
-    font-size: 15px;
-    padding: 10px 16px;
-  }
-
-  .add-preset-button {
-    font-size: 15px;
-    padding: 10px;
-  }
-
-  .preset-error {
-    font-size: 13px;
-    padding: 10px;
   }
 }
